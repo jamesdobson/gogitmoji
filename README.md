@@ -14,3 +14,8 @@ Currently under construction 🚧, not much is implemented!
 - [ ] Autobuilds and releases
 - [ ] Install git commit hook
 - [ ] Support conventional commits (with gitmoji)
+
+## License
+Licensed under the [MIT](https://github.com/jamesdobson/gogitmoji/blob/master/LICENSE) license.
+
+The Gitmoji database is from https://github.com/carloscuesta/gitmoji.
