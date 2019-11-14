@@ -41,10 +41,13 @@ func main() {
 
 	searcher := func(input string, index int) bool {
 		gitmoji := gitmojiContainer.Gitmoji[index]
-		name := strings.Replace(strings.ToLower(gitmoji.Name), " ", "", -1)
+		tosearch := gitmoji.Name + gitmoji.Code + gitmoji.Description
+
+		// Normalize
+		tosearch = strings.Replace(strings.ToLower(tosearch), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
-		return strings.Contains(name, input)
+		return strings.Contains(tosearch, input)
 	}
 
 	prompt := promptui.Select{

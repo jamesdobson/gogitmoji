@@ -6,7 +6,7 @@ Currently under construction 🚧, not much is implemented!
 
 ## Capabilities
 - [x] Select a Gitmoji from a list
-- [ ] Search name, description, and code
+- [x] Search name, description, and code
 - [ ] Automatically get latest Gitmoji database
 - [ ] Ask full list of Gitmoji commit message questions and output commit message
 - [ ] Implement first automated tests
