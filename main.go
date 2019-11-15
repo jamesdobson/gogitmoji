@@ -13,10 +13,12 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
+// GitmojiContainer holds a bunch of Gitmoji.
 type GitmojiContainer struct {
 	Gitmoji []Gitmoji `json:"gitmojis"`
 }
 
+// Gitmoji is a structure with the information about a single gitmoji.
 type Gitmoji struct {
 	Emoji       string
 	Entity      string
@@ -73,8 +75,13 @@ func main() {
 	fmt.Printf("%s\n", gitmoji[i].Name)
 }
 
+// GitmojiURL is the address from which to download the list of gitmoji.
 const GitmojiURL string = "https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json"
+
+// GitmojiDirName is the name of the directory under the user's home directory to store the gitmoji list.
 const GitmojiDirName string = ".gitmoji"
+
+// GitmojiFileName is the name of the file to store the list of gitmoji.
 const GitmojiFileName string = "gitmojis.json"
 
 // Gets the gitmoji list from a local file cache if available;
