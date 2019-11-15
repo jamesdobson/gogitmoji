@@ -8,7 +8,7 @@ Currently under construction 🚧, not much is implemented!
 
 - [x] Select a Gitmoji from a list
 - [x] Search name, description, and code
-- [ ] Automatically get latest Gitmoji database
+- [x] Automatically get latest Gitmoji database
 - [ ] Ask full list of Gitmoji commit message questions and output commit message
 - [ ] Implement first automated tests
 - [ ] Commit to git with commit message
