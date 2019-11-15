@@ -26,7 +26,11 @@ type Gitmoji struct {
 }
 
 func main() {
-	gitmoji := getGitmoji()
+	gitmoji, err := getGitmoji()
+
+	if err != nil {
+		log.Panic(`Unable to get list of gitmoji: `, err)
+	}
 
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}?",
@@ -63,8 +67,7 @@ func main() {
 	i, _, err := prompt.Run()
 
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return
+		log.Panic(`Prompt failed: `, err)
 	}
 
 	fmt.Printf("%s\n", gitmoji[i].Name)
@@ -76,11 +79,11 @@ const GitmojiFileName string = `gitmojis.json`
 
 // Gets the gitmoji list from a local file cache if available;
 // otherwise, downloads the latest gitmoji list from github.com.
-func getGitmoji() []Gitmoji {
+func getGitmoji() ([]Gitmoji, error) {
 	homedir, err := os.UserHomeDir()
 
 	if err != nil {
-		log.Panic(`Cannot determine home directory: `, err)
+		return nil, fmt.Errorf(`Cannot determine home directory: %v`, err)
 	}
 
 	cacheFile := path.Join(homedir, GitmojiDirName, GitmojiFileName)
@@ -94,29 +97,29 @@ func getGitmoji() []Gitmoji {
 			r, err := http.Get(GitmojiURL)
 
 			if err != nil {
-				log.Panic(`Unable to download gitmoji list: `, err)
+				return nil, fmt.Errorf(`Unable to download gitmoji list: %v`, err)
 			}
 
 			defer r.Body.Close()
 			content, err = ioutil.ReadAll(r.Body)
 
 			if err != nil {
-				log.Panic(`Unable to download gitmoji list: `, err)
+				return nil, fmt.Errorf(`Unable to download gitmoji list: %v`, err)
 			}
 
 			err = os.MkdirAll(path.Dir(cacheFile), 0755)
 
 			if err != nil {
-				log.Panic(`Unable to create gitmoji cache directory: `, err)
+				return nil, fmt.Errorf(`Unable to create gitmoji cache directory: %v`, err)
 			}
 
 			err = ioutil.WriteFile(cacheFile, content, 0644)
 
 			if err != nil {
-				log.Panic(`Unable to write gitmoji cache: `, err)
+				return nil, fmt.Errorf(`Unable to write gitmoji cache: %v`, err)
 			}
 		} else {
-			log.Panic(`Unable to read gitmoji cache: `, err)
+			return nil, fmt.Errorf(`Unable to read gitmoji cache: %v`, err)
 		}
 	}
 
@@ -124,8 +127,8 @@ func getGitmoji() []Gitmoji {
 	err = json.Unmarshal([]byte(content), &gitmojiContainer)
 
 	if err != nil {
-		log.Panic(`Cannot process gitmoji list; perhaps the file is corrupted? `, err)
+		return nil, fmt.Errorf(`Cannot process gitmoji list; perhaps the file is corrupted? Underlying error: %v`, err)
 	}
 
-	return gitmojiContainer.Gitmoji
+	return gitmojiContainer.Gitmoji, nil
 }
