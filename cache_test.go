@@ -7,11 +7,13 @@ import (
 	"net/http/httptest"
 	"os"
 	"path"
+	"strings"
 	"testing"
 )
 
 func TestInvalidJSON(t *testing.T) {
 	f, err := ioutil.TempFile("", "gitmoji")
+	defer os.Remove(f.Name())
 
 	if err != nil {
 		t.Fatal(err)
@@ -20,14 +22,12 @@ func TestInvalidJSON(t *testing.T) {
 	_, err = f.Write([]byte("Invalid JSON"))
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal(err)
 	}
 
 	err = f.Close()
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal(err)
 	}
 
@@ -44,7 +44,6 @@ func TestInvalidJSON(t *testing.T) {
 	_, err = cache.GetGitmoji()
 
 	if err == nil {
-		os.Remove(f.Name())
 		t.Fatal("Expected error getting gitmoji from cache file")
 	}
 
@@ -64,6 +63,7 @@ func TestInvalidJSON(t *testing.T) {
 
 func TestEmptyJSON(t *testing.T) {
 	f, err := ioutil.TempFile("", "gitmoji")
+	defer os.Remove(f.Name())
 
 	if err != nil {
 		t.Fatal(err)
@@ -72,14 +72,12 @@ func TestEmptyJSON(t *testing.T) {
 	_, err = f.Write([]byte("{}"))
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal(err)
 	}
 
 	err = f.Close()
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal(err)
 	}
 
@@ -97,24 +95,17 @@ func TestEmptyJSON(t *testing.T) {
 	gitmoji, err := cache.GetGitmoji()
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal("Expected empty gitmoji list, got error: ", err)
 	}
 
 	if len(gitmoji) != 0 {
-		os.Remove(f.Name())
 		t.Fatal("Expected empty gitmoji list, got this: ", gitmoji)
-	}
-
-	err = os.Remove(cache.CacheFile)
-
-	if err != nil {
-		t.Fatal(err)
 	}
 }
 
 func TestUnreadableCacheFile(t *testing.T) {
 	f, err := ioutil.TempFile("", "gitmoji")
+	defer os.Remove(f.Name())
 
 	if err != nil {
 		t.Fatal(err)
@@ -123,14 +114,12 @@ func TestUnreadableCacheFile(t *testing.T) {
 	_, err = f.Write([]byte("{}"))
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal(err)
 	}
 
 	err = f.Close()
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal(err)
 	}
 
@@ -147,7 +136,6 @@ func TestUnreadableCacheFile(t *testing.T) {
 	err = os.Chmod(f.Name(), 0)
 
 	if err != nil {
-		os.Remove(f.Name())
 		t.Fatal("Unable to make file unreadable: ", err)
 	}
 
@@ -156,12 +144,6 @@ func TestUnreadableCacheFile(t *testing.T) {
 
 	if err == nil {
 		t.Fatal("Expected error reading cache file.")
-	}
-
-	err = os.Remove(cache.CacheFile)
-
-	if err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -172,7 +154,7 @@ func TestErrorFetchingData(t *testing.T) {
 		gitmoji:   nil,
 
 		load: func() ([]byte, error) {
-			return nil, fmt.Errorf("error fetching cache file")
+			return nil, fmt.Errorf("trigger an error")
 		},
 	}
 
@@ -222,6 +204,44 @@ func TestLoadFromURL(t *testing.T) {
 	err = os.Remove(cacheFile)
 
 	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestLoad404(t *testing.T) {
+	cacheFile := path.Join(os.TempDir(), "gitmoji-temp-file.json")
+
+	err := os.Remove(cacheFile)
+
+	if err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+
+	// Testing HTTP Server
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	// Load emoji...
+	cache, err := NewGitmojiCacheWithURLAndCacheFile(server.URL, cacheFile)
+
+	// Load from cache file
+	_, err = cache.GetGitmoji()
+
+	if err == nil {
+		os.Remove(cacheFile)
+		t.Fatal("Expected error fetching gitmoji list.")
+	}
+
+	if !strings.Contains(err.Error(), "404") {
+		os.Remove(cacheFile)
+		t.Fatal("Expected a 404 error; got: ", err)
+	}
+
+	err = os.Remove(cacheFile)
+
+	if err != nil && !os.IsNotExist(err) {
 		t.Fatal(err)
 	}
 }

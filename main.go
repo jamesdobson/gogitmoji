@@ -13,20 +13,6 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-// GitmojiContainer holds a bunch of Gitmoji.
-type GitmojiContainer struct {
-	Gitmoji []Gitmoji `json:"gitmojis"`
-}
-
-// Gitmoji is a structure with the information about a single gitmoji.
-type Gitmoji struct {
-	Emoji       string
-	Entity      string
-	Code        string
-	Description string
-	Name        string
-}
-
 func main() {
 	cache, err := NewGitmojiCache()
 
@@ -98,6 +84,20 @@ type GitmojiCache struct {
 	load      func() ([]byte, error)
 }
 
+// GitmojiContainer holds a bunch of Gitmoji.
+type GitmojiContainer struct {
+	Gitmoji []Gitmoji `json:"gitmojis"`
+}
+
+// Gitmoji is a structure with the information about a single gitmoji.
+type Gitmoji struct {
+	Emoji       string
+	Entity      string
+	Code        string
+	Description string
+	Name        string
+}
+
 func NewGitmojiCache() (GitmojiCache, error) {
 	homedir, err := os.UserHomeDir()
 
@@ -119,10 +119,15 @@ func NewGitmojiCacheWithURLAndCacheFile(url string, cacheFile string) (GitmojiCa
 			r, err := http.Get(url)
 
 			if err != nil {
-				return nil, fmt.Errorf("Unable to download gitmoji list: %v", err)
+				return nil, fmt.Errorf("Unable to download gitmoji list (from %s): %v", url, err)
 			}
 
 			defer r.Body.Close()
+
+			if r.StatusCode != http.StatusOK {
+				return nil, fmt.Errorf("Unable to download gitmoji list (from %s): %v", url, r.Status)
+			}
+
 			body, err := ioutil.ReadAll(r.Body)
 
 			if err != nil {
