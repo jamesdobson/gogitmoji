@@ -20,17 +20,76 @@ func main() {
 		log.Panic(err)
 	}
 
-	gitmoji, err := cache.GetGitmoji()
+	gitmojiList, err := cache.GetGitmoji()
 
 	if err != nil {
 		log.Panic("Unable to get list of gitmoji: ", err)
 	}
 
+	gitmoji, err := promptGitmoji(gitmojiList)
+
+	if err != nil {
+		log.Panic("Couldn't pick a gitmoji: ", err)
+	}
+
+	title, err := prompt("Enter the commit title", true)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	message, err := prompt("Enter the (optional) commit message", false)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	fullTitle := gitmoji.Emoji + "  " + title
+
+	fmt.Printf("Commit message title is: %s\n", fullTitle)
+
+	if len(message) > 0 {
+		fmt.Printf("Commit message is: %s\n", message)
+	}
+}
+
+func prompt(question string, mandatory bool) (string, error) {
+	templates := &promptui.PromptTemplates{
+		Success: `{{ "✔" | faint }} {{ . | faint }}{{ ":" | faint }} `,
+	}
+
+	validator := func(input string) error {
+		if !mandatory || len(input) >= 1 {
+			return nil
+		}
+
+		return fmt.Errorf("this is required")
+	}
+
+	prompt := promptui.Prompt{
+		Label:     question,
+		Validate:  validator,
+		Templates: templates,
+
+		// Disable the pointer
+		Pointer: func(x []rune) []rune { return x },
+	}
+
+	result, err := prompt.Run()
+
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
+func promptGitmoji(gitmoji []Gitmoji) (Gitmoji, error) {
 	templates := &promptui.SelectTemplates{
-		Label:    "{{ . }}?",
-		Active:   "‣ {{ .Emoji }} {{ .Code | cyan }} {{ .Description }}",
-		Inactive: "  {{ .Emoji }} {{ .Code | cyan }} {{ .Description }}",
-		Selected: "{{ .Emoji }} {{ .Code | cyan }} {{ .Description }}",
+		Label:    "{{ \"?\" | yellow }} {{ . }}",
+		Active:   "‣ {{ .Emoji }}  - {{ .Code | cyan }} - {{ .Description }}",
+		Inactive: "  {{ .Emoji }}  - {{ .Code | cyan }} - {{ .Description }}",
+		Selected: `{{ "? Choose a gitmoji" | faint }} {{ .Emoji }}  - {{ .Description }}`,
 		Details: `
 --------- Gitmoji ----------
 {{ "Name:" | faint }}	{{ .Emoji }} {{ .Name }}
@@ -51,7 +110,7 @@ func main() {
 	}
 
 	prompt := promptui.Select{
-		Label:     "Gitmoji",
+		Label:     "Choose a gitmoji",
 		Items:     gitmoji,
 		Templates: templates,
 		Size:      12,
@@ -61,10 +120,10 @@ func main() {
 	i, _, err := prompt.Run()
 
 	if err != nil {
-		log.Panic("Prompt failed: ", err)
+		return Gitmoji{}, err
 	}
 
-	fmt.Printf("%s\n", gitmoji[i].Name)
+	return gitmoji[i], nil
 }
 
 // GitmojiURL is the address from which to download the list of gitmoji.
