@@ -11,7 +11,7 @@ Currently under construction 🚧, not much is implemented!
 - [x] Automatically get latest gitmoji database
 - [x] Implement first automated tests
 - [x] Ask gitmoji commit message questions and output commit message
-- [ ] Commit to git with commit message
+- [x] Commit to git with commit message
 - [ ] List gitmoji
 - [ ] Update gitmoji cache
 - [ ] Support emoji code in message instead of emoji itself

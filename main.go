@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 
@@ -46,11 +47,52 @@ func main() {
 
 	fullTitle := gitmoji.Emoji + "  " + title
 
-	fmt.Printf("Commit message title is: %s\n", fullTitle)
+	fmt.Printf("Going to execute:\n\ngit commit -m \"%s\"", fullTitle)
 
 	if len(message) > 0 {
-		fmt.Printf("Commit message is: %s\n", message)
+		fmt.Printf(" -m \"%s\"", message)
 	}
+
+	fmt.Printf("\n\n")
+
+	if !confirm("Execute") {
+		fmt.Printf("Canceled.\n")
+		return
+	}
+
+	fmt.Printf("Executing...\n")
+
+	var cmd *exec.Cmd
+
+	if len(message) > 0 {
+		cmd = exec.Command("git", "commit", "-m", fullTitle, "-m", message)
+	} else {
+		cmd = exec.Command("git", "commit", "-m", fullTitle)
+	}
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err = cmd.Run()
+
+	if err != nil {
+		code := cmd.ProcessState.ExitCode()
+		fmt.Printf("\ngit commit exited with code: %d\n", code)
+		os.Exit(code)
+	}
+
+	fmt.Printf("\ngogitmoji done.\n")
+}
+
+func confirm(question string) bool {
+	prompt := promptui.Prompt{
+		Label:     question,
+		IsConfirm: true,
+	}
+
+	result, err := prompt.Run()
+
+	return err == nil && strings.ToLower(result) == "y"
 }
 
 func prompt(question string, mandatory bool) (string, error) {
