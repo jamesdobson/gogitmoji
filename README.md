@@ -12,9 +12,9 @@ Currently under construction 🚧, not much is implemented!
 - [x] Implement first automated tests
 - [x] Ask gitmoji commit message questions and output commit message
 - [x] Commit to git with commit message
-- [ ] List gitmoji
+- [x] List gitmoji
 - [ ] Update gitmoji cache
-- [ ] Support emoji code in message instead of emoji itself
+- [ ] Support emoji code in message instead of emoji itself (add configuration support)
 - [ ] Ask for scope depending on config
 - [ ] CI build and releases
 - [ ] Homebrew package

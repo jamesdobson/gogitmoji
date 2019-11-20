@@ -11,10 +11,49 @@ import (
 	"path"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/manifoldco/promptui"
+	flag "github.com/spf13/pflag"
 )
 
 func main() {
+	var doList *bool = flag.BoolP("list", "l", false, "List the gitmoji")
+
+	flag.Parse()
+
+	if *doList {
+		list()
+	} else {
+		commit()
+	}
+}
+
+func list() {
+	cache, err := NewGitmojiCache()
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	gitmojiList, err := cache.GetGitmoji()
+
+	if err != nil {
+		log.Panic("Unable to get list of gitmoji: ", err)
+	}
+
+	cyan := color.New(color.FgCyan)
+
+	for i := 0; i < len(gitmojiList); i++ {
+		gitmoji := gitmojiList[i]
+		fmt.Printf("%s  - ", gitmoji.Emoji)
+		cyan.Printf("%s", gitmoji.Code)
+		fmt.Printf(" %s\n", gitmoji.Description)
+	}
+
+	fmt.Println("")
+}
+
+func commit() {
 	cache, err := NewGitmojiCache()
 
 	if err != nil {
