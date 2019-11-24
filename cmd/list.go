@@ -11,12 +11,14 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List all available gitmoji",
+	Short: "📜  List all available gitmoji (default command)",
 	Long: `List all available gitmoji.
 
 The gitmoji are printed on standard output, one gitmoji per line. Each line
 has the emoji itself, the emoji's code, and a description of when to use
-it.`,
+it.
+
+This is the default command when no other command is specified to gogitmoji.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		list()
 	},

@@ -14,7 +14,7 @@ import (
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
-	Short: "Compose a commit message and execute git commit",
+	Short: "⚡️  Compose a commit message and execute git commit",
 	Long: `Compose a commit message and execute git commit.
 
 Prompts for the gitmoji to use, as well as the commit message itself. Once

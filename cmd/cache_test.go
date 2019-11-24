@@ -35,7 +35,7 @@ func TestInvalidJSON(t *testing.T) {
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
-		load: func() ([]byte, error) {
+		download: func(url string) ([]byte, error) {
 			return []byte("This is also not valid JSON"), nil
 		},
 	}
@@ -85,7 +85,7 @@ func TestEmptyJSON(t *testing.T) {
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
-		load: func() ([]byte, error) {
+		download: func(url string) ([]byte, error) {
 			t.Fatal("This should not be called")
 			return nil, nil
 		},
@@ -127,7 +127,7 @@ func TestUnreadableCacheFile(t *testing.T) {
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
-		load: func() ([]byte, error) {
+		download: func(url string) ([]byte, error) {
 			t.Fatal("This should not be called")
 			return nil, nil
 		},
@@ -153,7 +153,7 @@ func TestErrorFetchingData(t *testing.T) {
 		CacheFile: cacheFile,
 		gitmoji:   nil,
 
-		load: func() ([]byte, error) {
+		download: func(url string) ([]byte, error) {
 			return nil, fmt.Errorf("trigger an error")
 		},
 	}

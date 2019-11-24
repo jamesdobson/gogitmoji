@@ -45,6 +45,24 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	setHelpEmoji()
+}
+
+// Set the help emoji
+func setHelpEmoji() {
+	rootCmd.InitDefaultHelpCmd()
+	commands := rootCmd.Commands()
+
+	for i := 0; i < len(commands); i++ {
+		command := commands[i]
+
+		if command.Name() == "help" {
+			fmt.Println("Updating short: " + command.Short)
+			command.Short = "📗  " + command.Short
+			break
+		}
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.

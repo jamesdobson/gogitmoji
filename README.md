@@ -13,7 +13,7 @@ Currently under construction 🚧, not much is implemented!
 - [x] Ask gitmoji commit message questions and output commit message
 - [x] Commit to git with commit message
 - [x] List gitmoji
-- [ ] Update gitmoji cache
+- [x] Update gitmoji cache
 - [ ] Support emoji code in message instead of emoji itself (add configuration support)
 - [ ] Ask for scope depending on config
 - [ ] CI build and releases

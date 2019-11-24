@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -24,7 +24,7 @@ type GitmojiCache struct {
 	CacheFile string
 	gitmoji   []Gitmoji
 	url       string
-	load      func() ([]byte, error)
+	download  func(string) ([]byte, error)
 }
 
 // GitmojiContainer holds a bunch of Gitmoji.
@@ -39,6 +39,49 @@ type Gitmoji struct {
 	Code        string
 	Description string
 	Name        string
+}
+
+func UpdateGitmojiCache() error {
+	homedir, err := os.UserHomeDir()
+
+	if err != nil {
+		return fmt.Errorf("Cannot determine home directory: %v", err)
+	}
+
+	cacheFile := path.Join(homedir, GitmojiDirName, GitmojiFileName)
+
+	// Get current list
+	currentContent, err := ioutil.ReadFile(cacheFile)
+
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("Unable to read local gitmoji cache: %v", err)
+		}
+
+		currentContent = []byte{}
+	}
+
+	// Fetch latest list
+	updatedContent, err := download(GitmojiURL)
+
+	if err != nil {
+		return fmt.Errorf("Cannot fetch latest gitmoji: %v", err)
+	}
+
+	// Compare
+	if !bytes.Equal(currentContent, updatedContent) {
+		err = writeCache(cacheFile, updatedContent)
+
+		if err != nil {
+			return fmt.Errorf("Unable to write local gitmoji cache: %v", err)
+		}
+
+		fmt.Println("List of gitmoji updated! 🎉")
+	} else {
+		fmt.Println("List of gitmoji is already up to date. 👍")
+	}
+
+	return nil
 }
 
 func NewGitmojiCache() (GitmojiCache, error) {
@@ -58,28 +101,48 @@ func NewGitmojiCacheWithURLAndCacheFile(url string, cacheFile string) (GitmojiCa
 		CacheFile: cacheFile,
 		url:       url,
 		gitmoji:   nil,
-		load: func() ([]byte, error) {
-			r, err := http.Get(url)
-
-			if err != nil {
-				return nil, fmt.Errorf("Unable to download gitmoji list (from %s): %v", url, err)
-			}
-
-			defer r.Body.Close()
-
-			if r.StatusCode != http.StatusOK {
-				return nil, fmt.Errorf("Unable to download gitmoji list (from %s): %v", url, r.Status)
-			}
-
-			body, err := ioutil.ReadAll(r.Body)
-
-			if err != nil {
-				return nil, fmt.Errorf("Unable to download gitmoji list: %v", err)
-			}
-
-			return body, nil
-		},
+		download:  download,
 	}, nil
+}
+
+func download(url string) ([]byte, error) {
+	fmt.Println("🌐  Fetching list of gitmoji...")
+
+	r, err := http.Get(url)
+
+	if err != nil {
+		return nil, fmt.Errorf("Unable to download gitmoji list (from %s): %v", url, err)
+	}
+
+	defer r.Body.Close()
+
+	if r.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unable to download gitmoji list (from %s): %v", url, r.Status)
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		return nil, fmt.Errorf("Unable to download gitmoji list: %v", err)
+	}
+
+	return body, nil
+}
+
+func writeCache(cacheFile string, content []byte) error {
+	err := os.MkdirAll(path.Dir(cacheFile), 0755)
+
+	if err != nil {
+		return fmt.Errorf("Unable to create gitmoji cache directory: %v", err)
+	}
+
+	err = ioutil.WriteFile(cacheFile, content, 0644)
+
+	if err != nil {
+		return fmt.Errorf("Unable to write gitmoji cache: %v", err)
+	}
+
+	return nil
 }
 
 // GetGitmoji gets the gitmoji list from a local file cache if available;
@@ -93,24 +156,16 @@ func (cache *GitmojiCache) GetGitmoji() ([]Gitmoji, error) {
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Print("Fetching list of gitmoji...")
-
-			content, err = cache.load()
+			content, err = cache.download(cache.url)
 
 			if err != nil {
 				return nil, err
 			}
 
-			err = os.MkdirAll(path.Dir(cache.CacheFile), 0755)
+			err = writeCache(cache.CacheFile, content)
 
 			if err != nil {
-				return nil, fmt.Errorf("Unable to create gitmoji cache directory: %v", err)
-			}
-
-			err = ioutil.WriteFile(cache.CacheFile, content, 0644)
-
-			if err != nil {
-				return nil, fmt.Errorf("Unable to write gitmoji cache: %v", err)
+				return nil, err
 			}
 		} else {
 			return nil, fmt.Errorf("Unable to read gitmoji cache: %v", err)
