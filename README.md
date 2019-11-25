@@ -14,7 +14,7 @@ Currently under construction 🚧, not much is implemented!
 - [x] Commit to git with commit message
 - [x] List gitmoji
 - [x] Update gitmoji cache
-- [ ] Support emoji code in message instead of emoji itself (add configuration support)
+- [x] Support emoji code in message instead of emoji itself (add configuration support)
 - [ ] Ask for scope depending on config
 - [ ] CI build and releases
 - [ ] Homebrew package

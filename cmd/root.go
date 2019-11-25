@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,7 +19,7 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		list()
+		commit()
 	},
 }
 
@@ -34,15 +35,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gogitmoji.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	setHelpEmoji()
 }
@@ -75,11 +68,11 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".gogitmoji" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".gogitmoji")
+		viper.AddConfigPath(path.Join(home, ".gitmoji"))
+		viper.SetConfigName("config")
 	}
 
+	viper.SetEnvPrefix("gitmoji")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.

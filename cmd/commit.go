@@ -9,6 +9,14 @@ import (
 
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+const (
+	formatSetting = "format"
+
+	formatAsEmoji = "emoji"
+	formatAsCode  = "code"
 )
 
 // commitCmd represents the commit command
@@ -27,18 +35,18 @@ all prompts are filled out, executes git commit.`,
 func init() {
 	rootCmd.AddCommand(commitCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// commitCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// commitCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	commitCmd.Flags().StringP("format", "f", "emoji", `Emoji format; either "emoji" or "code".`)
+	viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
 }
 
 func commit() {
+	format := viper.GetString(formatSetting)
+
+	if format != formatAsEmoji && format != formatAsCode {
+		fmt.Printf("Unknown emoji format: \"%s\"\n", format)
+		os.Exit(1)
+	}
+
 	cache, err := NewGitmojiCache()
 
 	if err != nil {
@@ -84,7 +92,13 @@ func commit() {
 		log.Panic(err)
 	}
 
-	fullTitle := gitmoji.Emoji + "  " + title
+	var fullTitle string
+
+	if format == formatAsEmoji {
+		fullTitle = gitmoji.Emoji + "  " + title
+	} else {
+		fullTitle = gitmoji.Code + "  " + title
+	}
 
 	fmt.Printf("Going to execute:\n\ngit commit -m \"%s\"", fullTitle)
 
