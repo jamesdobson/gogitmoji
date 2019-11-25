@@ -7,7 +7,6 @@ require (
 	github.com/manifoldco/promptui v0.3.2
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
-	github.com/mitchellh/go-homedir v1.1.0
 	// Fix an issue with promptui: https://github.com/manifoldco/promptui/issues/98
 	github.com/nicksnyder/go-i18n v1.10.1 // indirect
 	github.com/spf13/cobra v0.0.5
