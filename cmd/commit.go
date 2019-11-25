@@ -54,18 +54,33 @@ func commit() {
 	gitmoji, err := promptGitmoji(gitmojiList)
 
 	if err != nil {
+		if err == promptui.ErrInterrupt {
+			fmt.Println("Canceled.")
+			os.Exit(1)
+		}
+
 		log.Panic("Couldn't pick a gitmoji: ", err)
 	}
 
 	title, err := prompt("Enter the commit title", true)
 
 	if err != nil {
+		if err == promptui.ErrInterrupt {
+			fmt.Println("Canceled.")
+			os.Exit(1)
+		}
+
 		log.Panic(err)
 	}
 
 	message, err := prompt("Enter the (optional) commit message", false)
 
 	if err != nil {
+		if err == promptui.ErrInterrupt {
+			fmt.Println("Canceled.")
+			os.Exit(1)
+		}
+
 		log.Panic(err)
 	}
 
