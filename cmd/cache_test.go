@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -104,6 +105,10 @@ func TestEmptyJSON(t *testing.T) {
 }
 
 func TestUnreadableCacheFile(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skipping test on Windows due to os.Chmod incompatibility.")
+	}
+
 	f, err := ioutil.TempFile("", "gitmoji")
 	defer os.Remove(f.Name())
 
