@@ -4,6 +4,8 @@
 
 Currently under construction 🚧, not much is implemented!
 
+[![Build Status](https://travis-ci.org/jamesdobson/gogitmoji.svg?branch=master)](https://travis-ci.org/jamesdobson/gogitmoji)
+
 ## Capabilities
 
 - [x] Select a gitmoji from a list
