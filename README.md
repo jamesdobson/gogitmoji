@@ -7,6 +7,8 @@ Currently under construction 🚧, not much is implemented!
 [![Build Status](https://travis-ci.org/jamesdobson/gogitmoji.svg?branch=master)](https://travis-ci.org/jamesdobson/gogitmoji)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jamesdobson/gogitmoji)](https://goreportcard.com/report/github.com/jamesdobson/gogitmoji)
 
+[![asciicast](https://asciinema.org/a/283799.svg)](https://asciinema.org/a/283799)
+
 ## Usage
 
 ```bash
