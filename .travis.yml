@@ -8,12 +8,17 @@ os:
 go:
   - '1.13'
 
+script:
+  - go test ${gobuild_args} ./...
+  - go build
+
 deploy:
   provider: releases
   api_key:
     secure: hnKvw0cgdxGgtKP7fBkiSLsQ6Pp1hzZOvyRFRIOcVoKZO+0a977sUOxiVL2LHnQ3V1lYKDVkugHRCmDGokqnNlDC43lU8fX4S+j9F6almewITxzOKsN9kNEv6PGQNeSyeTtt+fg9opaop5oWB/T2rBCxhfTcPpEv43jQPDuv4sCXa/Znm4U3NeGl4XYJ29Ve1WXADnFFY3EWiojpInaGnOkU8ysPFGvqZ24pNo0ooZZe/u1BCFP/+lQzij/uIUWrHh4JE8pC2OjBQs2lTk1JE+zyLk7yasI3TQ6T8t+ROOobjpRQLElz7cb2xiqWp+Obh2R99vUkISN6eeEPTOvjYCXHBL+f0CGG57/qbCKS9CBTORUdJwk5uAyTglelr3NwVq5wzdCMY3WV0Ks5arIKwOlWSHbIQXjdHlUUlH2rgiwe3ttH+aDSNTY3YwbCO4P2M2yLCfYOFVa2GaqYgMVPYwD1PgK6Wk6mOABmkMUbBEJI0NB4yrfOMjjpx9/bgTCm/qjXtFzAetccGPqg8SyOgmrnrewnTJkSvbJdhwwlkQ5Nx1ur2puNQJHJMmcMW7pw3HaAORCTS9sqiN6xC8aigMqKxi2wMBOwp1Kr1xAzfAqtfh2ahFElb8m+FNL6WNAaGxvpldruJT1tZ7OQgpVUo0WbYNc6LSDXpW90E8Qa2os=
   file: gogitmoji
   draft: true
+  skip_cleanup: true
   on:
     repo: jamesdobson/gogitmoji
     branch: feature/release-to-github
