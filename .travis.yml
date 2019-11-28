@@ -8,11 +8,6 @@ os:
 go:
 - '1.13'
 
-script:
-- go test ${gobuild_args} ./...
-- go build
-- ls -l
-
 deploy:
 - provider: script
   skip_cleanup: true
