@@ -1,9 +1,22 @@
 language: go
 
 os:
-  - linux
-  - osx
-  - windows
+- linux
+- osx
+- windows
 
 go:
-  - "1.13"
+- '1.13'
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true
+    condition: "$TRAVIS_OS_NAME = linux"
+    branch: master
+
+env:
+  global:
+    secure: CsdvA9T/akXuKkSQvtanYIgY+y9JK2YDJ8D99sYPQa2eKoIUCfuhiPoBMMw0kuQcxHJdKjbveT6MeniKI6VgQhJSj21LTvaf6IEvhrJx3YF0i6a+55gpZSKbGZVNp5q1KktyFvVIbtpho/MvYhKWqM9kba8qd8NOAzMLMSciCjlXXiJy3DmNOM6utwywfP4bk0koEKlDhMldLcteFdTmHY9atHG+whBkVnYLgfm5v1BS64FkkbwZ5rFrZPjMBw3QTJp2LAE21BVahhBM7hGCs1toMrqFBvpoaG1f8FGeSoffnpDnxlks1dPXPJ40MC4Xx8uqi431Z1KgF26g1FBlIay92yv+wa3mXWJC4SQC0vcfWKqrOKNkMO0DoXmUuCIFNygHVAD7J9Cv1ofyIpMDze11IET94nXUMV2OcO6xuB7ZoJyH/bZj2rr4uJ5yXQb7BXKqIrUSXXK4vfl9idY9IlPSxiYWe0fnziPbRr7iX3upfdTCR/py7iJz/lVvEnfQDCCaqOksHyUQqYoxeVDZPQlqllZXWuIuyEEopoWxZfzxcdnns9XJ8eb9wFAuOHprx0N7IX1pthzQAWmxOK8c7NSrhNu1CNg5KyR2F0stt1wJeEd9ugJcTtbRquOQO99yEX8s0TUUlI1utwW7dEPYL0Z45GzBPZfSGhMquk9eR+g=
