@@ -149,7 +149,7 @@ $ gitmoji update
 - [x] Update gitmoji cache
 - [x] Support emoji code in message instead of emoji itself (add configuration support)
 - [ ] Ask for scope depending on config
-- [ ] CI build and releases
+- [x] CI build and releases
 - [ ] Homebrew package
 - [ ] Install git commit hook
 - [ ] Support conventional commits (with optional gitmoji)
