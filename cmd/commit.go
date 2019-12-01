@@ -17,6 +17,8 @@ const (
 
 	formatAsEmoji = "emoji"
 	formatAsCode  = "code"
+
+	scopeSetting = "scope"
 )
 
 // commitCmd represents the commit command
@@ -36,7 +38,9 @@ func init() {
 	rootCmd.AddCommand(commitCmd)
 
 	commitCmd.Flags().StringP("format", "f", "emoji", `Emoji format; either "emoji" or "code".`)
+	commitCmd.Flags().BoolP("scope", "p", false, "Enable scope prompt")
 	viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
+	viper.BindPFlag(scopeSetting, commitCmd.Flags().Lookup("scope"))
 }
 
 func commit() {
@@ -70,34 +74,25 @@ func commit() {
 		log.Panic("Couldn't pick a gitmoji: ", err)
 	}
 
-	title, err := prompt("Enter the commit title", true)
+	var scope string = ""
 
-	if err != nil {
-		if err == promptui.ErrInterrupt {
-			fmt.Println("Canceled.")
-			os.Exit(1)
-		}
-
-		log.Panic(err)
+	if viper.GetBool(scopeSetting) {
+		scope = promptOrCancel("Enter the scope of current changes", true)
 	}
 
-	message, err := prompt("Enter the (optional) commit message", false)
+	title := promptOrCancel("Enter the commit title", true)
+	message := promptOrCancel("Enter the (optional) commit message", false)
 
-	if err != nil {
-		if err == promptui.ErrInterrupt {
-			fmt.Println("Canceled.")
-			os.Exit(1)
-		}
+	var fullTitle string = title
 
-		log.Panic(err)
+	if scope != "" {
+		fullTitle = "(" + scope + "): " + title
 	}
-
-	var fullTitle string
 
 	if format == formatAsEmoji {
-		fullTitle = gitmoji.Emoji + "  " + title
+		fullTitle = gitmoji.Emoji + "  " + fullTitle
 	} else {
-		fullTitle = gitmoji.Code + "  " + title
+		fullTitle = gitmoji.Code + "  " + fullTitle
 	}
 
 	fmt.Printf("Going to execute:\n\ngit commit -m \"%s\"", fullTitle)
@@ -146,6 +141,21 @@ func confirm(question string) bool {
 	result, err := prompt.Run()
 
 	return err == nil && strings.ToLower(result) == "y"
+}
+
+func promptOrCancel(question string, mandatory bool) string {
+	s, err := prompt(question, mandatory)
+
+	if err != nil {
+		if err == promptui.ErrInterrupt {
+			fmt.Println("Canceled.")
+			os.Exit(1)
+		}
+
+		log.Panic(err)
+	}
+
+	return s
 }
 
 func prompt(question string, mandatory bool) (string, error) {
