@@ -6,6 +6,7 @@ Currently under construction 🚧, not much is implemented!
 
 [![Build Status](https://travis-ci.org/jamesdobson/gogitmoji.svg?branch=master)](https://travis-ci.org/jamesdobson/gogitmoji)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jamesdobson/gogitmoji)](https://goreportcard.com/report/github.com/jamesdobson/gogitmoji)
+[![Coverage Status](https://coveralls.io/repos/github/jamesdobson/gogitmoji/badge.svg?branch=master)](https://coveralls.io/github/jamesdobson/gogitmoji?branch=master)
 
 [![asciicast](https://asciinema.org/a/283799.svg)](https://asciinema.org/a/283799)
 
@@ -148,7 +149,7 @@ $ gitmoji update
 - [x] List gitmoji
 - [x] Update gitmoji cache
 - [x] Support emoji code in message instead of emoji itself (add configuration support)
-- [ ] Ask for scope depending on config
+- [x] Ask for scope depending on config
 - [x] CI build and releases
 - [ ] Homebrew package
 - [ ] Install git commit hook
