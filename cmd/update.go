@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+
+	"github.com/jamesdobson/gogitmoji/gitmoji"
 )
 
 // updateCmd represents the update command
@@ -12,7 +14,7 @@ var updateCmd = &cobra.Command{
 
 Downloads a new list of gitmoji from https://gitmoji.carloscuesta.me/.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		UpdateGitmojiCache()
+		gitmoji.UpdateGitmojiCache()
 	},
 }
 

@@ -12,6 +12,9 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/jamesdobson/gogitmoji/gitmoji"
+	"github.com/jamesdobson/gogitmoji/tmpl"
 )
 
 const (
@@ -52,13 +55,35 @@ func init() {
 
 func commit() {
 	t := viper.GetString(typeSetting)
-	var tpl CommitTemplate
+	var tpl tmpl.CommitTemplate
+
+	// TODO: Move templates to a separate package "tmpl", one file per template
+	// TODO: Default templates built-in, can override them in the config file
+	// TODO: Add a "choose" prompt type to deal with conventional commit type
+	// TODO: move cache to a "gitmoji" package
+
+	/*
+		var templates = viper.GetStringMap("templates")
+		var template = templates["gitmoji"]
+
+		var result tmpl.CommitTemplate
+
+		err := mapstructure.Decode(template, &result)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("%#v\n\n", result)
+
+		os.Exit(1)
+	*/
 
 	switch t {
 	case typeGitmoji:
-		tpl = GitmojiCommit
+		tpl = tmpl.GitmojiCommit
 	case typeConventional:
-		tpl = ConventionalCommit
+		tpl = tmpl.ConventionalCommit
 	default:
 		log.Fatalf("Unknown commit type: \"%s\"\n", t)
 	}
@@ -68,7 +93,7 @@ func commit() {
 	fmt.Printf("\ngogitmoji done.\n")
 }
 
-func commitWithTemplate(tpl CommitTemplate) {
+func commitWithTemplate(tpl tmpl.CommitTemplate) {
 	var answers = map[string]interface{}{}
 
 	for q := 0; q < len(tpl.Questions); q++ {
@@ -186,96 +211,6 @@ func run(name string, args []string) {
 	}
 }
 
-type CommitQuestion struct {
-	PromptType    string
-	Mandatory     bool
-	Prompt        string
-	ValueCode     string
-	EnableSetting string
-}
-
-type CommitTemplate struct {
-	Questions   []CommitQuestion
-	Command     string
-	CommandArgs []string
-}
-
-var GitmojiCommit = CommitTemplate{
-	Questions: []CommitQuestion{
-		CommitQuestion{
-			PromptType: "gitmoji",
-			Mandatory:  true,
-			ValueCode:  "gitmoji",
-		},
-		CommitQuestion{
-			PromptType:    "text",
-			Mandatory:     false,
-			Prompt:        "Enter the scope of current changes",
-			ValueCode:     "Scope",
-			EnableSetting: scopeSetting,
-		},
-		CommitQuestion{
-			PromptType: "text",
-			Mandatory:  true,
-			Prompt:     "Enter the commit title",
-			ValueCode:  "title",
-		},
-		CommitQuestion{
-			PromptType: "text",
-			Mandatory:  false,
-			Prompt:     "Enter the (optional) commit message",
-			ValueCode:  "message",
-		},
-	},
-	Command: "git",
-	CommandArgs: []string{
-		"commit",
-		"-m",
-		`{{if eq (getString "format") "emoji"}}{{.gitmoji.Emoji}} {{else}}{{.gitmoji.Code}}{{end}} {{with .scope}}({{.}}): {{end}}{{.title}}`,
-		"{{with .message}}-m{{end}}",
-		"{{.message}}",
-	},
-}
-
-var ConventionalCommit = CommitTemplate{
-	Questions: []CommitQuestion{
-		CommitQuestion{
-			PromptType: "conventional",
-			Mandatory:  true,
-			ValueCode:  "type",
-		},
-		CommitQuestion{
-			PromptType: "text",
-			Mandatory:  true,
-			Prompt:     "Enter the commit description, with JIRA number at end",
-			ValueCode:  "description",
-		},
-		// TODO: Ask if this is a breaking change
-		CommitQuestion{
-			PromptType: "text",
-			Mandatory:  false,
-			Prompt:     "Enter the (optional) commit body",
-			ValueCode:  "body",
-		},
-		CommitQuestion{
-			PromptType: "text",
-			Mandatory:  false,
-			Prompt:     "Enter the (optional) commit footer",
-			ValueCode:  "footer",
-		},
-	},
-	Command: "git",
-	CommandArgs: []string{
-		"commit",
-		"-m",
-		"{{.type}}: {{.description}}",
-		"{{with .body}}-m{{end}}",
-		"{{.body}}",
-		"{{with .footer}}-m{{end}}",
-		"{{.footer}}",
-	},
-}
-
 func confirm(question string) bool {
 	prompt := promptui.Prompt{
 		Label:     question,
@@ -333,14 +268,14 @@ func prompt(question string, mandatory bool) (string, error) {
 	return result, nil
 }
 
-func promptGitmoji() (Gitmoji, error) {
-	cache, err := NewGitmojiCache()
+func promptGitmoji() (gitmoji.Gitmoji, error) {
+	cache, err := gitmoji.NewGitmojiCache()
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	gitmoji, err := cache.GetGitmoji()
+	glist, err := cache.GetGitmoji()
 
 	if err != nil {
 		log.Panic("Unable to get list of gitmoji: ", err)
@@ -360,7 +295,7 @@ func promptGitmoji() (Gitmoji, error) {
 	}
 
 	searcher := func(input string, index int) bool {
-		gitmoji := gitmoji[index]
+		gitmoji := glist[index]
 		tosearch := gitmoji.Name + gitmoji.Code + gitmoji.Description
 
 		// Normalize
@@ -372,7 +307,7 @@ func promptGitmoji() (Gitmoji, error) {
 
 	prompt := promptui.Select{
 		Label:     "Choose a gitmoji",
-		Items:     gitmoji,
+		Items:     glist,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -381,10 +316,10 @@ func promptGitmoji() (Gitmoji, error) {
 	i, _, err := prompt.Run()
 
 	if err != nil {
-		return Gitmoji{}, err
+		return gitmoji.Gitmoji{}, err
 	}
 
-	return gitmoji[i], nil
+	return glist[i], nil
 }
 
 type ConventionalCommitType struct {

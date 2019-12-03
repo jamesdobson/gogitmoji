@@ -1,4 +1,4 @@
-package cmd
+package gitmoji
 
 import (
 	"fmt"

@@ -6,6 +6,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
+
+	"github.com/jamesdobson/gogitmoji/gitmoji"
 )
 
 // listCmd represents the list command
@@ -29,7 +31,7 @@ func init() {
 }
 
 func list() {
-	cache, err := NewGitmojiCache()
+	cache, err := gitmoji.NewGitmojiCache()
 
 	if err != nil {
 		log.Panic(err)
