@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -50,42 +51,128 @@ func init() {
 }
 
 func commit() {
-	t, err := template.New("test").Parse(GitmojiCommit.Messages[0])
-
-	if err != nil {
-		panic(err)
-	}
-
-	var d = map[string]string{
-		"gitmoji": "X",
-		"title":   "this is a test title",
-		//"scope":   "mini",
-	}
-
-	err = t.Execute(os.Stdout, d)
-}
-
-/*
-func commit() {
 	t := viper.GetString(typeSetting)
+	var tpl CommitTemplate
 
-	if t == typeGitmoji {
-		commitAsGitmoji()
-	} else if t == typeConventional {
-		commitAsConventional()
-	} else {
-		fmt.Printf("Unknown commit type: \"%s\"\n", t)
-		os.Exit(1)
+	switch t {
+	case typeGitmoji:
+		tpl = GitmojiCommit
+	case typeConventional:
+		tpl = ConventionalCommit
+	default:
+		log.Fatalf("Unknown commit type: \"%s\"\n", t)
 	}
+
+	commitWithTemplate(tpl)
 
 	fmt.Printf("\ngogitmoji done.\n")
 }
-*/
 
-func execGit(args []string) {
+func commitWithTemplate(tpl CommitTemplate) {
+	var answers = map[string]interface{}{}
+
+	for q := 0; q < len(tpl.Questions); q++ {
+		var question = tpl.Questions[q]
+
+		if question.EnableSetting != "" && !viper.GetBool(question.EnableSetting) {
+			continue
+		}
+
+		switch question.PromptType {
+		case "text":
+			answer := promptOrCancel(question.Prompt, question.Mandatory)
+			answers[question.ValueCode] = answer
+
+		case "conventional":
+			t, err := promptConventionalCommitType()
+
+			if err != nil {
+				if err == promptui.ErrInterrupt {
+					fmt.Println("Canceled.")
+					os.Exit(1)
+				}
+
+				log.Panic("Couldn't pick a conventional commit type: ", err)
+			}
+
+			answers[question.ValueCode] = t.Name
+
+		case "gitmoji":
+			gitmoji, err := promptGitmoji()
+
+			if err != nil {
+				if err == promptui.ErrInterrupt {
+					fmt.Println("Canceled.")
+					os.Exit(1)
+				}
+
+				log.Panic("Couldn't pick a gitmoji: ", err)
+			}
+
+			answers[question.ValueCode] = gitmoji
+
+		default:
+			log.Fatalf("Unknown prompt type '%s'...\n", question.PromptType)
+		}
+	}
+
+	var args = make([]string, 0, len(tpl.CommandArgs))
+	var sb strings.Builder
+
+	for n := 0; n < len(tpl.CommandArgs); n++ {
+		sb.Reset()
+		t, err := template.New("arg").
+			Funcs(
+				map[string]interface{}{
+					"getString": func(name string) string {
+						return viper.GetString(name)
+					},
+				}).
+			Parse(tpl.CommandArgs[n])
+
+		if err != nil {
+			panic(err)
+		}
+
+		err = t.Execute(&sb, answers)
+
+		if err != nil {
+			panic(err)
+		}
+
+		arg := sb.String()
+
+		if arg != "" {
+			args = append(args, arg)
+		}
+	}
+
+	fmt.Printf("Going to execute: %s", tpl.Command)
+
+	isPlain := regexp.MustCompile(`^[-A-Za-z0-9]+$`).MatchString
+
+	for n := 0; n < len(args); n++ {
+		if isPlain(args[n]) {
+			fmt.Printf(" %s", args[n])
+		} else {
+			fmt.Printf(" \"%s\"", args[n])
+		}
+	}
+
+	fmt.Printf("\n\n")
+
+	if !confirm("Execute") {
+		fmt.Printf("Canceled.\n")
+		return
+	}
+
+	run(tpl.Command, args)
+}
+
+func run(name string, args []string) {
 	fmt.Printf("Executing...\n")
 
-	var cmd = exec.Command("git", args...)
+	var cmd = exec.Command(name, args...)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -94,21 +181,23 @@ func execGit(args []string) {
 
 	if err != nil {
 		code := cmd.ProcessState.ExitCode()
-		fmt.Printf("\ngit commit exited with code: %d\n", code)
+		fmt.Printf("\n'%s' exited with code: %d\n", name, code)
 		os.Exit(code)
 	}
 }
 
 type CommitQuestion struct {
-	PromptType string
-	Mandatory  bool
-	Prompt     string
-	ValueCode  string
+	PromptType    string
+	Mandatory     bool
+	Prompt        string
+	ValueCode     string
+	EnableSetting string
 }
 
 type CommitTemplate struct {
-	Questions []CommitQuestion
-	Messages  []string
+	Questions   []CommitQuestion
+	Command     string
+	CommandArgs []string
 }
 
 var GitmojiCommit = CommitTemplate{
@@ -118,12 +207,12 @@ var GitmojiCommit = CommitTemplate{
 			Mandatory:  true,
 			ValueCode:  "gitmoji",
 		},
-		// TODO: How to make this driven by config?
 		CommitQuestion{
-			PromptType: "text",
-			Mandatory:  false,
-			Prompt:     "Enter the scope of current changes",
-			ValueCode:  "Scope",
+			PromptType:    "text",
+			Mandatory:     false,
+			Prompt:        "Enter the scope of current changes",
+			ValueCode:     "Scope",
+			EnableSetting: scopeSetting,
 		},
 		CommitQuestion{
 			PromptType: "text",
@@ -138,9 +227,13 @@ var GitmojiCommit = CommitTemplate{
 			ValueCode:  "message",
 		},
 	},
-	Messages: []string{
-		"{{ .gitmoji }}  {{ with .scope }}({{ . }}): {{ end }}{{ .title }}\n\n",
-		"{{ message }}",
+	Command: "git",
+	CommandArgs: []string{
+		"commit",
+		"-m",
+		`{{if eq (getString "format") "emoji"}}{{.gitmoji.Emoji}} {{else}}{{.gitmoji.Code}}{{end}} {{with .scope}}({{.}}): {{end}}{{.title}}`,
+		"{{with .message}}-m{{end}}",
+		"{{.message}}",
 	},
 }
 
@@ -157,6 +250,7 @@ var ConventionalCommit = CommitTemplate{
 			Prompt:     "Enter the commit description, with JIRA number at end",
 			ValueCode:  "description",
 		},
+		// TODO: Ask if this is a breaking change
 		CommitQuestion{
 			PromptType: "text",
 			Mandatory:  false,
@@ -170,86 +264,16 @@ var ConventionalCommit = CommitTemplate{
 			ValueCode:  "footer",
 		},
 	},
-	Messages: []string{
-		"{{ type }}: {{ description }}",
-		"{{ body }}",
-		"{{ footer }}",
+	Command: "git",
+	CommandArgs: []string{
+		"commit",
+		"-m",
+		"{{.type}}: {{.description}}",
+		"{{with .body}}-m{{end}}",
+		"{{.body}}",
+		"{{with .footer}}-m{{end}}",
+		"{{.footer}}",
 	},
-}
-
-func commitAsGitmoji() {
-	format := viper.GetString(formatSetting)
-
-	if format != formatAsEmoji && format != formatAsCode {
-		fmt.Printf("Unknown emoji format: \"%s\"\n", format)
-		os.Exit(1)
-	}
-
-	cache, err := NewGitmojiCache()
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	gitmojiList, err := cache.GetGitmoji()
-
-	if err != nil {
-		log.Panic("Unable to get list of gitmoji: ", err)
-	}
-
-	gitmoji, err := promptGitmoji(gitmojiList)
-
-	if err != nil {
-		if err == promptui.ErrInterrupt {
-			fmt.Println("Canceled.")
-			os.Exit(1)
-		}
-
-		log.Panic("Couldn't pick a gitmoji: ", err)
-	}
-
-	var scope string = ""
-
-	if viper.GetBool(scopeSetting) {
-		scope = promptOrCancel("Enter the scope of current changes", true)
-	}
-
-	title := promptOrCancel("Enter the commit title", true)
-	message := promptOrCancel("Enter the (optional) commit message", false)
-
-	var fullTitle string = title
-
-	if scope != "" {
-		fullTitle = "(" + scope + "): " + title
-	}
-
-	if format == formatAsEmoji {
-		fullTitle = gitmoji.Emoji + "  " + fullTitle
-	} else {
-		fullTitle = gitmoji.Code + "  " + fullTitle
-	}
-
-	fmt.Printf("Going to execute:\n\ngit commit -m \"%s\"", fullTitle)
-
-	var args []string = make([]string, 3, 5)
-
-	args[0] = "commit"
-	args[1] = "-m"
-	args[2] = fullTitle
-
-	if len(message) > 0 {
-		fmt.Printf(" -m \"%s\"", message)
-		args = append(args, "-m", message)
-	}
-
-	fmt.Printf("\n\n")
-
-	if !confirm("Execute") {
-		fmt.Printf("Canceled.\n")
-		return
-	}
-
-	execGit(args)
 }
 
 func confirm(question string) bool {
@@ -309,7 +333,19 @@ func prompt(question string, mandatory bool) (string, error) {
 	return result, nil
 }
 
-func promptGitmoji(gitmoji []Gitmoji) (Gitmoji, error) {
+func promptGitmoji() (Gitmoji, error) {
+	cache, err := NewGitmojiCache()
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	gitmoji, err := cache.GetGitmoji()
+
+	if err != nil {
+		log.Panic("Unable to get list of gitmoji: ", err)
+	}
+
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ \"?\" | yellow }} {{ . }}",
 		Active:   "‣ {{ .Emoji }}  - {{ .Code | cyan }} - {{ .Description }}",
@@ -350,19 +386,6 @@ func promptGitmoji(gitmoji []Gitmoji) (Gitmoji, error) {
 
 	return gitmoji[i], nil
 }
-
-/*
-Commit message pattern
-
-<type>: <description> <jira number>
-
-[optional body]
-
-[optional footer]
-
-Footer must start with "BREAKING CHANGE: " if there is a breaking change, and a
-description must follow.
-*/
 
 type ConventionalCommitType struct {
 	Name               string
@@ -406,52 +429,6 @@ var ConventialCommitTypeList = []ConventionalCommitType{
 		Description:        "Changes to the build process or auxiliary tools and libraries such as documentation generation.",
 		IncludeInChangelog: false,
 	},
-}
-
-func commitAsConventional() {
-	t, err := promptConventionalCommitType()
-
-	if err != nil {
-		if err == promptui.ErrInterrupt {
-			fmt.Println("Canceled.")
-			os.Exit(1)
-		}
-
-		log.Panic("Couldn't pick a conventional commit type: ", err)
-	}
-
-	description := promptOrCancel("Enter the commit description, with JIRA number at end", true)
-	body := promptOrCancel("Enter the commit body", false)
-	footer := promptOrCancel("Enter the commit footer", false)
-
-	var fullDescription string = t.Name + ": " + description
-
-	fmt.Printf("Going to execute:\n\ngit commit -m \"%s\"", fullDescription)
-
-	var args []string = make([]string, 3, 7)
-
-	args[0] = "commit"
-	args[1] = "-m"
-	args[2] = fullDescription
-
-	if len(body) > 0 {
-		fmt.Printf(" -m \"%s\"", body)
-		args = append(args, "-m", body)
-	}
-
-	if len(footer) > 0 {
-		fmt.Printf(" -m \"%s\"", footer)
-		args = append(args, "-m", footer)
-	}
-
-	fmt.Printf("\n\n")
-
-	if !confirm("Execute") {
-		fmt.Printf("Canceled.\n")
-		return
-	}
-
-	execGit(args)
 }
 
 func promptConventionalCommitType() (ConventionalCommitType, error) {
