@@ -12,7 +12,7 @@ before_install:
   - go get github.com/mattn/goveralls
 
 script:
-  - $GOPATH/bin/goveralls -service=travis-ci
+  - $GOPATH/bin/goveralls -v -show -service=travis-ci
 
 deploy:
 - provider: script
