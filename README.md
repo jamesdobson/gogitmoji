@@ -152,7 +152,7 @@ gitmoji update
 - [x] CI build and releases
 - [ ] Homebrew package
 - [ ] Install git commit hook
-- [ ] Support conventional commits (with optional gitmoji)
+- [x] Support conventional commits (with optional gitmoji)
 
 ## License
 

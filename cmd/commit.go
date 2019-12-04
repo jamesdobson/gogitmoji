@@ -45,6 +45,7 @@ func init() {
 
 	commitCmd.Flags().StringP("format", "f", formatAsEmoji, `Emoji format; either "emoji" or "code".`)
 	commitCmd.Flags().BoolP("scope", "p", false, "Enable scope prompt")
+	// TODO: Change to "template"
 	commitCmd.Flags().StringP("type", "t", tmpl.DefaultTemplateName, `Commit template name.`)
 	viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
 	viper.BindPFlag(scopeSetting, commitCmd.Flags().Lookup("scope"))
@@ -55,6 +56,7 @@ func commit() {
 	templates := viper.GetStringMap("templates")
 	t := viper.GetString(typeSetting)
 
+	// TODO: Update documentation with an example of setting a template
 	tmpl.LoadTemplates(templates)
 
 	if tpl, ok := tmpl.TemplateLookup[t]; ok {
@@ -146,19 +148,8 @@ func commitWithTemplate(tpl tmpl.CommitTemplate) {
 		}
 	}
 
-	fmt.Printf("Going to execute: %s", tpl.Command)
-
-	isPlain := regexp.MustCompile(`^[-A-Za-z0-9]+$`).MatchString
-
-	for n := 0; n < len(args); n++ {
-		if isPlain(args[n]) {
-			fmt.Printf(" %s", args[n])
-		} else {
-			fmt.Printf(" \"%s\"", args[n])
-		}
-	}
-
-	fmt.Printf("\n\n")
+	displayCommand := getPrintableCommand(tpl.Command, args)
+	fmt.Printf("Going to execute: %s\n\n", displayCommand)
 
 	if !confirm("Execute") {
 		fmt.Printf("Canceled.\n")
@@ -166,6 +157,24 @@ func commitWithTemplate(tpl tmpl.CommitTemplate) {
 	}
 
 	run(tpl.Command, args)
+}
+
+func getPrintableCommand(name string, args []string) string {
+	var sb *strings.Builder = &strings.Builder{}
+
+	sb.WriteString(name)
+
+	isPlain := regexp.MustCompile(`^[-.A-Za-z0-9]+$`).MatchString
+
+	for n := 0; n < len(args); n++ {
+		if isPlain(args[n]) {
+			fmt.Fprintf(sb, " %s", args[n])
+		} else {
+			fmt.Fprintf(sb, " \"%s\"", strings.ReplaceAll(args[n], `"`, `\"`))
+		}
+	}
+
+	return sb.String()
 }
 
 func run(name string, args []string) {
@@ -229,8 +238,8 @@ func prompt(question string, mandatory bool) (string, error) {
 		Validate:  validator,
 		Templates: templates,
 
-		// Disable the pointer (not supported in promptui 0.3.2)
-		//Pointer: func(x []rune) []rune { return x },
+		// Disable the pointer
+		Pointer: func(x []rune) []rune { return x },
 	}
 
 	result, err := prompt.Run()
