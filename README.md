@@ -13,7 +13,7 @@ Currently under construction 🚧, not much is implemented!
 ## Usage
 
 ```bash
-$ gitmoji help
+gitmoji help
 ```
 
 ```
@@ -43,13 +43,13 @@ Guides the user through the process of composing a commit message, and then
 executes `git commit`.
 
 ```bash
-$ gitmoji commit
+gitmoji commit
 ```
 
 `commit` is the default command, so just the following is equivalent:
 
 ```bash
-$ gitmoji
+gitmoji
 ```
 
 ### List
@@ -57,7 +57,7 @@ $ gitmoji
 Prints the list of gitmoji.
 
 ```bash
-$ gitmoji list
+gitmoji list
 ```
 
 ```
@@ -134,9 +134,8 @@ Checks to see if there is a new list of gitmoji online, updating the local cache
 if there are new gitmoji.
 
 ```bash
-$ gitmoji update
+gitmoji update
 ```
-
 
 ## Capabilities
 
