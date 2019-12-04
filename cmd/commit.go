@@ -52,10 +52,10 @@ func init() {
 }
 
 func commit() {
+	templates := viper.GetStringMap("templates")
 	t := viper.GetString(typeSetting)
 
-	// TODO: Default templates built-in, can override them in the config file  <-- do this first!!!
-	// TODO: Add a "choose" prompt type to deal with conventional commit type
+	tmpl.LoadTemplates(templates)
 
 	if tpl, ok := tmpl.TemplateLookup[t]; ok {
 		commitWithTemplate(tpl)
@@ -81,6 +81,7 @@ func commitWithTemplate(tpl tmpl.CommitTemplate) {
 			answer := promptOrCancel(question.Prompt, question.Mandatory)
 			answers[question.ValueCode] = answer
 
+		// TODO: Add a "choose" prompt type to deal with conventional commit type
 		case "conventional":
 			t, err := promptConventionalCommitType()
 
