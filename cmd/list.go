@@ -18,9 +18,7 @@ var listCmd = &cobra.Command{
 
 The gitmoji are printed on standard output, one gitmoji per line. Each line
 has the emoji itself, the emoji's code, and a description of when to use
-it.
-
-This is the default command when no other command is specified to gogitmoji.`,
+it.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		list()
 	},

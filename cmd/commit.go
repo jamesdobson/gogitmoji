@@ -33,7 +33,9 @@ var commitCmd = &cobra.Command{
 	Long: `Compose a commit message and execute git commit.
 
 Prompts for the gitmoji to use, as well as the commit message itself. Once
-all prompts are filled out, executes git commit.`,
+all prompts are filled out, executes git commit.
+
+This is the default command when no other command is specified to gogitmoji.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		commit()
 	},
