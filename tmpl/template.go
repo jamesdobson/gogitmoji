@@ -6,14 +6,16 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// TODO: Add comments to fix linter warnings
-type CommitTemplate struct {
-	Questions   []CommitQuestion
+// CommandTemplate represents a command to execute and user prompts to get
+// the command arguments.
+type CommandTemplate struct {
+	Prompts     []Prompt
 	Command     string
 	CommandArgs []string
 }
 
-type CommitQuestion struct {
+// Prompt defines a question to ask the user.
+type Prompt struct {
 	PromptType    string
 	Mandatory     bool
 	Prompt        string
@@ -21,12 +23,17 @@ type CommitQuestion struct {
 	EnableSetting string
 }
 
-var TemplateLookup = make(map[string]CommitTemplate, 2)
-var DefaultTemplateName = gitmojiCommitTemplateName
+// TemplateLookup maps template names to templates.
+var TemplateLookup = make(map[string]CommandTemplate, 2)
 
+// DefaultTemplateName is the name of the template to use if when no template is specified.
+var DefaultTemplateName = gitmojiCommandTemplateName
+
+// LoadTemplates reads a map of template names to basic data types and populates
+// TemplateLookup with the result.
 func LoadTemplates(templates map[string]interface{}) {
 	for name, t := range templates {
-		var result CommitTemplate
+		var result CommandTemplate
 
 		err := mapstructure.Decode(t, &result)
 

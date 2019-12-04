@@ -80,11 +80,11 @@ func commit() {
 	}
 }
 
-func commitWithTemplate(tpl tmpl.CommitTemplate) {
+func commitWithTemplate(tpl tmpl.CommandTemplate) {
 	var answers = map[string]interface{}{}
 
-	for q := 0; q < len(tpl.Questions); q++ {
-		var question = tpl.Questions[q]
+	for q := 0; q < len(tpl.Prompts); q++ {
+		var question = tpl.Prompts[q]
 
 		if question.EnableSetting != "" && !viper.GetBool(question.EnableSetting) {
 			continue
@@ -142,7 +142,7 @@ func commitWithTemplate(tpl tmpl.CommitTemplate) {
 	run(tpl.Command, args)
 }
 
-func generateArgs(tpl *tmpl.CommitTemplate, answers map[string]interface{}) []string {
+func generateArgs(tpl *tmpl.CommandTemplate, answers map[string]interface{}) []string {
 	var args = make([]string, 0, len(tpl.CommandArgs))
 	var sb strings.Builder
 	var functions = map[string]interface{}{
@@ -321,13 +321,13 @@ func promptGitmoji() (gitmoji.Gitmoji, error) {
 	return glist[i], nil
 }
 
-type ConventionalCommitType struct {
+type conventionalCommitType struct {
 	Name               string
 	Description        string
 	IncludeInChangelog bool
 }
 
-var ConventialCommitTypeList = []ConventionalCommitType{
+var conventialCommitTypeList = []conventionalCommitType{
 	{
 		Name:               "feat",
 		Description:        "A new feature.",
@@ -365,7 +365,7 @@ var ConventialCommitTypeList = []ConventionalCommitType{
 	},
 }
 
-func promptConventionalCommitType() (ConventionalCommitType, error) {
+func promptConventionalCommitType() (conventionalCommitType, error) {
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ \"?\" | yellow }} {{ . }}",
 		Active:   "‣ {{ .Name }}",
@@ -378,7 +378,7 @@ func promptConventionalCommitType() (ConventionalCommitType, error) {
 	}
 
 	searcher := func(input string, index int) bool {
-		t := ConventialCommitTypeList[index]
+		t := conventialCommitTypeList[index]
 		tosearch := t.Name + t.Description
 
 		// Normalize
@@ -390,7 +390,7 @@ func promptConventionalCommitType() (ConventionalCommitType, error) {
 
 	prompt := promptui.Select{
 		Label:     "Choose the type of commit:",
-		Items:     ConventialCommitTypeList,
+		Items:     conventialCommitTypeList,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -399,8 +399,8 @@ func promptConventionalCommitType() (ConventionalCommitType, error) {
 	i, _, err := prompt.Run()
 
 	if err != nil {
-		return ConventionalCommitType{}, err
+		return conventionalCommitType{}, err
 	}
 
-	return ConventialCommitTypeList[i], nil
+	return conventialCommitTypeList[i], nil
 }

@@ -1,8 +1,8 @@
 package tmpl
 
-var gitmojiCommitTemplateName = "gitmoji"
-var gitmojiCommitTemplate = CommitTemplate{
-	Questions: []CommitQuestion{
+var gitmojiCommandTemplateName = "gitmoji"
+var gitmojiCommandTemplate = CommandTemplate{
+	Prompts: []Prompt{
 		{
 			PromptType: "gitmoji",
 			Mandatory:  true,
@@ -39,5 +39,5 @@ var gitmojiCommitTemplate = CommitTemplate{
 }
 
 func init() {
-	TemplateLookup[gitmojiCommitTemplateName] = gitmojiCommitTemplate
+	TemplateLookup[gitmojiCommandTemplateName] = gitmojiCommandTemplate
 }

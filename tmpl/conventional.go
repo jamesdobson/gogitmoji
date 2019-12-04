@@ -1,8 +1,8 @@
 package tmpl
 
-var conventionalCommitTemplateName = "conventional"
-var conventionalCommitTemplate = CommitTemplate{
-	Questions: []CommitQuestion{
+var conventionalCommandTemplateName = "conventional"
+var conventionalCommandTemplate = CommandTemplate{
+	Prompts: []Prompt{
 		{
 			PromptType: "conventional",
 			Mandatory:  true,
@@ -41,5 +41,5 @@ var conventionalCommitTemplate = CommitTemplate{
 }
 
 func init() {
-	TemplateLookup[conventionalCommitTemplateName] = conventionalCommitTemplate
+	TemplateLookup[conventionalCommandTemplateName] = conventionalCommandTemplate
 }

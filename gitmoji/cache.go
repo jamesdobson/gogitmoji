@@ -41,6 +41,8 @@ type Gitmoji struct {
 	Name        string
 }
 
+// UpdateCache checks the default URL for new gitmoji and updates the cache
+// file in local storage if it is stale.
 func UpdateCache() error {
 	homedir, err := os.UserHomeDir()
 
@@ -84,6 +86,7 @@ func UpdateCache() error {
 	return nil
 }
 
+// NewCache returns a gitmoji cache using the default URL and local storage.
 func NewCache() (Cache, error) {
 	homedir, err := os.UserHomeDir()
 
@@ -96,6 +99,8 @@ func NewCache() (Cache, error) {
 	return NewCacheWithURLAndCacheFile(GitmojiURL, cacheFile)
 }
 
+// NewCacheWithURLAndCacheFile returns a gitmoji cache of a custom URL and
+// local storage location. This method is intended to be used for testing only.
 func NewCacheWithURLAndCacheFile(url string, cacheFile string) (Cache, error) {
 	return Cache{
 		CacheFile: cacheFile,
