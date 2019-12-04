@@ -250,3 +250,21 @@ func TestLoad404(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestIntegrationDownload(t *testing.T) {
+	cache, err := NewGitmojiCache()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = cache.GetGitmoji()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(cache.gitmoji) <= 0 {
+		t.Fatal("Expected to get some gitmoji, but got nothing 😿")
+	}
+}
