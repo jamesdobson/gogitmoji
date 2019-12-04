@@ -32,7 +32,7 @@ func TestInvalidJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cache := GitmojiCache{
+	cache := Cache{
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
@@ -82,7 +82,7 @@ func TestEmptyJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cache := GitmojiCache{
+	cache := Cache{
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
@@ -128,7 +128,7 @@ func TestUnreadableCacheFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cache := GitmojiCache{
+	cache := Cache{
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
@@ -154,7 +154,7 @@ func TestUnreadableCacheFile(t *testing.T) {
 
 func TestErrorFetchingData(t *testing.T) {
 	cacheFile := path.Join(os.TempDir(), "gitmoji-file-not-found.json")
-	cache := GitmojiCache{
+	cache := Cache{
 		CacheFile: cacheFile,
 		gitmoji:   nil,
 
@@ -176,7 +176,7 @@ func TestLoadFromURL(t *testing.T) {
 
 	// Testing HTTP Server
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		rw.Write([]byte(`{
+		_, err := rw.Write([]byte(`{
 			"gitmojis": [
 			  {
 				"emoji": "🎨 ",
@@ -187,11 +187,19 @@ func TestLoadFromURL(t *testing.T) {
 			  }
 			]
 		}`))
+
+		if err != nil {
+			t.Fatal(err)
+		}
 	}))
 	defer server.Close()
 
 	// Load emoji...
-	cache, err := NewGitmojiCacheWithURLAndCacheFile(server.URL, cacheFile)
+	cache, err := NewCacheWithURLAndCacheFile(server.URL, cacheFile)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Load from cache file
 	gitmoji, err := cache.GetGitmoji()
@@ -229,7 +237,11 @@ func TestLoad404(t *testing.T) {
 	defer server.Close()
 
 	// Load emoji...
-	cache, err := NewGitmojiCacheWithURLAndCacheFile(server.URL, cacheFile)
+	cache, err := NewCacheWithURLAndCacheFile(server.URL, cacheFile)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Load from cache file
 	_, err = cache.GetGitmoji()
@@ -252,7 +264,7 @@ func TestLoad404(t *testing.T) {
 }
 
 func TestIntegrationDownload(t *testing.T) {
-	cache, err := NewGitmojiCache()
+	cache, err := NewCache()
 
 	if err != nil {
 		t.Fatal(err)
@@ -264,7 +276,7 @@ func TestIntegrationDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(cache.gitmoji) <= 0 {
+	if len(cache.gitmoji) == 0 {
 		t.Fatal("Expected to get some gitmoji, but got nothing 😿")
 	}
 }

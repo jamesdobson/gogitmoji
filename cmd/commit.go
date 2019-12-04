@@ -20,7 +20,6 @@ import (
 const (
 	formatSetting = "format"
 	formatAsEmoji = "emoji"
-	formatAsCode  = "code"
 
 	scopeSetting = "scope"
 
@@ -43,13 +42,27 @@ all prompts are filled out, executes git commit.`,
 func init() {
 	rootCmd.AddCommand(commitCmd)
 
+	var err error
+
 	commitCmd.Flags().StringP("format", "f", formatAsEmoji, `Emoji format; either "emoji" or "code".`)
 	commitCmd.Flags().BoolP("scope", "p", false, "Enable scope prompt")
 	// TODO: Change to "template"
 	commitCmd.Flags().StringP("type", "t", tmpl.DefaultTemplateName, `Commit template name.`)
-	viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
-	viper.BindPFlag(scopeSetting, commitCmd.Flags().Lookup("scope"))
-	viper.BindPFlag(typeSetting, commitCmd.Flags().Lookup("type"))
+
+	err = viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = viper.BindPFlag(scopeSetting, commitCmd.Flags().Lookup("scope"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = viper.BindPFlag(typeSetting, commitCmd.Flags().Lookup("type"))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func commit() {
@@ -65,7 +78,6 @@ func commit() {
 	} else {
 		log.Fatalf("Unknown commit type: \"%s\"\n", t)
 	}
-
 }
 
 func commitWithTemplate(tpl tmpl.CommitTemplate) {
@@ -117,18 +129,30 @@ func commitWithTemplate(tpl tmpl.CommitTemplate) {
 		}
 	}
 
+	args := generateArgs(&tpl, answers)
+
+	displayCommand := getPrintableCommand(tpl.Command, args)
+	fmt.Printf("Going to execute: %s\n\n", displayCommand)
+
+	if !confirm("Execute") {
+		fmt.Printf("Canceled.\n")
+		return
+	}
+
+	run(tpl.Command, args)
+}
+
+func generateArgs(tpl *tmpl.CommitTemplate, answers map[string]interface{}) []string {
 	var args = make([]string, 0, len(tpl.CommandArgs))
 	var sb strings.Builder
+	var functions = map[string]interface{}{
+		"getString": viper.GetString,
+	}
 
 	for n := 0; n < len(tpl.CommandArgs); n++ {
 		sb.Reset()
 		t, err := template.New("arg").
-			Funcs(
-				map[string]interface{}{
-					"getString": func(name string) string {
-						return viper.GetString(name)
-					},
-				}).
+			Funcs(functions).
 			Parse(tpl.CommandArgs[n])
 
 		if err != nil {
@@ -148,15 +172,7 @@ func commitWithTemplate(tpl tmpl.CommitTemplate) {
 		}
 	}
 
-	displayCommand := getPrintableCommand(tpl.Command, args)
-	fmt.Printf("Going to execute: %s\n\n", displayCommand)
-
-	if !confirm("Execute") {
-		fmt.Printf("Canceled.\n")
-		return
-	}
-
-	run(tpl.Command, args)
+	return args
 }
 
 func getPrintableCommand(name string, args []string) string {
@@ -252,7 +268,7 @@ func prompt(question string, mandatory bool) (string, error) {
 }
 
 func promptGitmoji() (gitmoji.Gitmoji, error) {
-	cache, err := gitmoji.NewGitmojiCache()
+	cache, err := gitmoji.NewCache()
 
 	if err != nil {
 		log.Panic(err)

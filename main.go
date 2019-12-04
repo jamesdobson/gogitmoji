@@ -19,7 +19,7 @@ func main() {
 		Short: "ℹ️  Display the version of this program",
 		Long:  `Display the version of this program.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("This is gogitmoji %v (%v).\n\n", version, commit)
+			fmt.Printf("This is gogitmoji %v (%v), build date: %v.\n\n", version, commit, date)
 		},
 	}
 	cmd.AddCommand(versionCmd)

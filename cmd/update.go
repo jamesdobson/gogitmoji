@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 
 	"github.com/jamesdobson/gogitmoji/gitmoji"
@@ -14,7 +16,11 @@ var updateCmd = &cobra.Command{
 
 Downloads a new list of gitmoji from https://gitmoji.carloscuesta.me/.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		gitmoji.UpdateGitmojiCache()
+		err := gitmoji.UpdateCache()
+
+		if err != nil {
+			log.Fatalf("Unable to update: %v", err)
+		}
 	},
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// TODO: Add comments to fix linter warnings
 type CommitTemplate struct {
 	Questions   []CommitQuestion
 	Command     string

@@ -31,7 +31,7 @@ func init() {
 }
 
 func list() {
-	cache, err := gitmoji.NewGitmojiCache()
+	cache, err := gitmoji.NewCache()
 
 	if err != nil {
 		log.Panic(err)

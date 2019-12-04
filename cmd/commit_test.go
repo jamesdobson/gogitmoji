@@ -21,5 +21,4 @@ func TestGetPrintableCommand(t *testing.T) {
 		getPrintableCommand("go", []string{"test", "-v"}))
 	assert.Equal(`echo "He asked \"why not?\""`,
 		getPrintableCommand("echo", []string{`He asked "why not?"`}))
-
 }

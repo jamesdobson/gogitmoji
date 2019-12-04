@@ -19,16 +19,16 @@ const GitmojiDirName string = ".gitmoji"
 // GitmojiFileName is the name of the file to store the list of gitmoji.
 const GitmojiFileName string = "gitmojis.json"
 
-// GitmojiCache is a local file cache for storing gitmoji.
-type GitmojiCache struct {
+// Cache is a local file cache for storing gitmoji.
+type Cache struct {
 	CacheFile string
 	gitmoji   []Gitmoji
 	url       string
 	download  func(string) ([]byte, error)
 }
 
-// GitmojiContainer holds a bunch of Gitmoji.
-type GitmojiContainer struct {
+// gitmojiContainer holds a bunch of Gitmoji, for JSON decoding purposes.
+type gitmojiContainer struct {
 	Gitmoji []Gitmoji `json:"gitmojis"`
 }
 
@@ -41,7 +41,7 @@ type Gitmoji struct {
 	Name        string
 }
 
-func UpdateGitmojiCache() error {
+func UpdateCache() error {
 	homedir, err := os.UserHomeDir()
 
 	if err != nil {
@@ -84,20 +84,20 @@ func UpdateGitmojiCache() error {
 	return nil
 }
 
-func NewGitmojiCache() (GitmojiCache, error) {
+func NewCache() (Cache, error) {
 	homedir, err := os.UserHomeDir()
 
 	if err != nil {
-		return GitmojiCache{}, fmt.Errorf("Cannot determine home directory: %v", err)
+		return Cache{}, fmt.Errorf("Cannot determine home directory: %v", err)
 	}
 
 	cacheFile := path.Join(homedir, GitmojiDirName, GitmojiFileName)
 
-	return NewGitmojiCacheWithURLAndCacheFile(GitmojiURL, cacheFile)
+	return NewCacheWithURLAndCacheFile(GitmojiURL, cacheFile)
 }
 
-func NewGitmojiCacheWithURLAndCacheFile(url string, cacheFile string) (GitmojiCache, error) {
-	return GitmojiCache{
+func NewCacheWithURLAndCacheFile(url string, cacheFile string) (Cache, error) {
+	return Cache{
 		CacheFile: cacheFile,
 		url:       url,
 		gitmoji:   nil,
@@ -108,6 +108,7 @@ func NewGitmojiCacheWithURLAndCacheFile(url string, cacheFile string) (GitmojiCa
 func download(url string) ([]byte, error) {
 	fmt.Println("🌐  Fetching list of gitmoji...")
 
+	// #nosec G107
 	r, err := http.Get(url)
 
 	if err != nil {
@@ -147,7 +148,7 @@ func writeCache(cacheFile string, content []byte) error {
 
 // GetGitmoji gets the gitmoji list from a local file cache if available;
 // otherwise, downloads the latest gitmoji list from github.com.
-func (cache *GitmojiCache) GetGitmoji() ([]Gitmoji, error) {
+func (cache *Cache) GetGitmoji() ([]Gitmoji, error) {
 	if cache.gitmoji != nil {
 		return cache.gitmoji, nil
 	}
@@ -172,8 +173,8 @@ func (cache *GitmojiCache) GetGitmoji() ([]Gitmoji, error) {
 		}
 	}
 
-	container := GitmojiContainer{}
-	err = json.Unmarshal([]byte(content), &container)
+	container := gitmojiContainer{}
+	err = json.Unmarshal(content, &container)
 
 	if err != nil {
 		return nil, fmt.Errorf("Cannot process gitmoji list; perhaps the file is corrupted? Underlying error: %v", err)
