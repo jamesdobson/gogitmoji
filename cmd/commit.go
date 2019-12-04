@@ -312,37 +312,37 @@ type ConventionalCommitType struct {
 }
 
 var ConventialCommitTypeList = []ConventionalCommitType{
-	ConventionalCommitType{
+	{
 		Name:               "feat",
 		Description:        "A new feature.",
 		IncludeInChangelog: true,
 	},
-	ConventionalCommitType{
+	{
 		Name:               "fix",
 		Description:        "A bug fix.",
 		IncludeInChangelog: true,
 	},
-	ConventionalCommitType{
+	{
 		Name:               "docs",
 		Description:        "Documentation only changes.",
 		IncludeInChangelog: false,
 	},
-	ConventionalCommitType{
+	{
 		Name:               "perf",
 		Description:        "A code change that improves performance.",
 		IncludeInChangelog: true,
 	},
-	ConventionalCommitType{
+	{
 		Name:               "refactor",
 		Description:        "A code change that neither fixes a bug nor adds a feature.",
 		IncludeInChangelog: false,
 	},
-	ConventionalCommitType{
+	{
 		Name:               "test",
 		Description:        "Adding missing or correcting existing tests.",
 		IncludeInChangelog: false,
 	},
-	ConventionalCommitType{
+	{
 		Name:               "chore",
 		Description:        "Changes to the build process or auxiliary tools and libraries such as documentation generation.",
 		IncludeInChangelog: false,
