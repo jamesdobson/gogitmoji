@@ -17,8 +17,6 @@ var rootCmd = &cobra.Command{
 	Use:   "gogitmoji",
 	Short: "Gitmoji helper written in Go.",
 	Long:  `gogitmoji helps you write git commit messages containing gitmoji!`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		commit()
 	},

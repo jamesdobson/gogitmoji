@@ -24,9 +24,7 @@ const (
 
 	scopeSetting = "scope"
 
-	typeSetting      = "type"
-	typeGitmoji      = "gitmoji"
-	typeConventional = "conventional"
+	typeSetting = "type"
 )
 
 // commitCmd represents the commit command
@@ -47,7 +45,7 @@ func init() {
 
 	commitCmd.Flags().StringP("format", "f", formatAsEmoji, `Emoji format; either "emoji" or "code".`)
 	commitCmd.Flags().BoolP("scope", "p", false, "Enable scope prompt")
-	commitCmd.Flags().StringP("type", "t", typeGitmoji, `Commit format; either "gitmoji" or "conventional".`)
+	commitCmd.Flags().StringP("type", "t", tmpl.DefaultTemplateName, `Commit template name.`)
 	viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
 	viper.BindPFlag(scopeSetting, commitCmd.Flags().Lookup("scope"))
 	viper.BindPFlag(typeSetting, commitCmd.Flags().Lookup("type"))
@@ -55,42 +53,17 @@ func init() {
 
 func commit() {
 	t := viper.GetString(typeSetting)
-	var tpl tmpl.CommitTemplate
 
-	// TODO: Move templates to a separate package "tmpl", one file per template
-	// TODO: Default templates built-in, can override them in the config file
+	// TODO: Default templates built-in, can override them in the config file  <-- do this first!!!
 	// TODO: Add a "choose" prompt type to deal with conventional commit type
-	// TODO: move cache to a "gitmoji" package
 
-	/*
-		var templates = viper.GetStringMap("templates")
-		var template = templates["gitmoji"]
-
-		var result tmpl.CommitTemplate
-
-		err := mapstructure.Decode(template, &result)
-
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("%#v\n\n", result)
-
-		os.Exit(1)
-	*/
-
-	switch t {
-	case typeGitmoji:
-		tpl = tmpl.GitmojiCommit
-	case typeConventional:
-		tpl = tmpl.ConventionalCommit
-	default:
+	if tpl, ok := tmpl.TemplateLookup[t]; ok {
+		commitWithTemplate(tpl)
+		fmt.Printf("\ngogitmoji done.\n")
+	} else {
 		log.Fatalf("Unknown commit type: \"%s\"\n", t)
 	}
 
-	commitWithTemplate(tpl)
-
-	fmt.Printf("\ngogitmoji done.\n")
 }
 
 func commitWithTemplate(tpl tmpl.CommitTemplate) {

@@ -1,6 +1,7 @@
 package tmpl
 
-var ConventionalCommit = CommitTemplate{
+var conventionalCommitTemplateName = "conventional"
+var conventionalCommitTemplate = CommitTemplate{
 	Questions: []CommitQuestion{
 		CommitQuestion{
 			PromptType: "conventional",
@@ -37,4 +38,8 @@ var ConventionalCommit = CommitTemplate{
 		"{{with .footer}}-m{{end}}",
 		"{{.footer}}",
 	},
+}
+
+func init() {
+	TemplateLookup[conventionalCommitTemplateName] = conventionalCommitTemplate
 }

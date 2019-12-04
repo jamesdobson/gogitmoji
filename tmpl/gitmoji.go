@@ -1,6 +1,7 @@
 package tmpl
 
-var GitmojiCommit = CommitTemplate{
+var gitmojiCommitTemplateName = "gitmoji"
+var gitmojiCommitTemplate = CommitTemplate{
 	Questions: []CommitQuestion{
 		CommitQuestion{
 			PromptType: "gitmoji",
@@ -35,4 +36,8 @@ var GitmojiCommit = CommitTemplate{
 		"{{with .message}}-m{{end}}",
 		"{{.message}}",
 	},
+}
+
+func init() {
+	TemplateLookup[gitmojiCommitTemplateName] = gitmojiCommitTemplate
 }

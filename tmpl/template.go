@@ -13,3 +13,6 @@ type CommitQuestion struct {
 	ValueCode     string
 	EnableSetting string
 }
+
+var TemplateLookup = make(map[string]CommitTemplate, 2)
+var DefaultTemplateName = gitmojiCommitTemplateName
