@@ -13,8 +13,8 @@ import (
  */
 
 // Lints the code.
-func Lint() {
-	sh.Exec(
+func Lint() error {
+	_, err := sh.Exec(
 		nil, os.Stdout, os.Stderr,
 		"golangci-lint",
 		"run",
@@ -37,4 +37,6 @@ func Lint() {
 		"--enable=unconvert",
 		"--enable=whitespace",
 	)
+
+	return err
 }
