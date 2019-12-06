@@ -21,6 +21,13 @@ type Prompt struct {
 	Prompt        string
 	ValueCode     string
 	EnableSetting string
+	Choices       []PromptChoice
+}
+
+// PromptChoice defines a single option in a multiple-choice prompt.
+type PromptChoice struct {
+	Value       string
+	Description string
 }
 
 // TemplateLookup maps template names to templates.

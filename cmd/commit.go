@@ -97,20 +97,9 @@ func commitWithTemplate(tpl tmpl.CommandTemplate) {
 			answer := promptOrCancel(question.Prompt, question.Mandatory)
 			answers[question.ValueCode] = answer
 
-		// TODO: Add a "choose" prompt type to deal with conventional commit type
-		case "conventional":
-			t, err := promptConventionalCommitType()
-
-			if err != nil {
-				if err == promptui.ErrInterrupt {
-					fmt.Println("Canceled.")
-					os.Exit(1)
-				}
-
-				log.Panic("Couldn't pick a conventional commit type: ", err)
-			}
-
-			answers[question.ValueCode] = t.Name
+		case "choice":
+			answer := promptChoice(question)
+			answers[question.ValueCode] = answer
 
 		case "gitmoji":
 			gitmoji, err := promptGitmoji()
@@ -323,65 +312,17 @@ func promptGitmoji() (gitmoji.Gitmoji, error) {
 	return glist[i], nil
 }
 
-type conventionalCommitType struct {
-	Name               string
-	Description        string
-	IncludeInChangelog bool
-}
-
-var conventialCommitTypeList = []conventionalCommitType{
-	{
-		Name:               "feat",
-		Description:        "A new feature.",
-		IncludeInChangelog: true,
-	},
-	{
-		Name:               "fix",
-		Description:        "A bug fix.",
-		IncludeInChangelog: true,
-	},
-	{
-		Name:               "docs",
-		Description:        "Documentation only changes.",
-		IncludeInChangelog: false,
-	},
-	{
-		Name:               "perf",
-		Description:        "A code change that improves performance.",
-		IncludeInChangelog: true,
-	},
-	{
-		Name:               "refactor",
-		Description:        "A code change that neither fixes a bug nor adds a feature.",
-		IncludeInChangelog: false,
-	},
-	{
-		Name:               "test",
-		Description:        "Adding missing or correcting existing tests.",
-		IncludeInChangelog: false,
-	},
-	{
-		Name:               "chore",
-		Description:        "Changes to the build process or auxiliary tools and libraries such as documentation generation.",
-		IncludeInChangelog: false,
-	},
-}
-
-func promptConventionalCommitType() (conventionalCommitType, error) {
+func promptChoice(question tmpl.Prompt) string {
 	templates := &promptui.SelectTemplates{
-		Label:    "{{ \"?\" | yellow }} {{ . }}",
-		Active:   "‣ {{ .Name }}",
-		Inactive: "  {{ .Name }}",
-		Selected: `{{ "? Choose the type of commit" | faint }} {{ .Name }}  - {{ .Description }}`,
-		Details: `
---------- Conventional Commit ----------
-{{ "Name:" | faint }}	{{ .Name }}
-{{ "Description:" | faint }}	{{ .Description }}`,
+		Label: "{{ \"?\" | yellow }} {{ . }}",
+		Active: "‣ {{ .Value }} 	{{ .Description }}",
+		Inactive: "  {{ .Value }} 	{{ .Description }}",
+		Selected: `{{ "? ` + question.Prompt + `" | faint }} {{ .Value }}  - {{ .Description }}`,
 	}
 
 	searcher := func(input string, index int) bool {
-		t := conventialCommitTypeList[index]
-		tosearch := t.Name + t.Description
+		t := question.Choices[index]
+		tosearch := t.Value + t.Description
 
 		// Normalize
 		tosearch = strings.Replace(strings.ToLower(tosearch), " ", "", -1)
@@ -392,7 +333,7 @@ func promptConventionalCommitType() (conventionalCommitType, error) {
 
 	prompt := promptui.Select{
 		Label:     "Choose the type of commit:",
-		Items:     conventialCommitTypeList,
+		Items:     question.Choices,
 		Templates: templates,
 		Size:      12,
 		Searcher:  searcher,
@@ -401,8 +342,13 @@ func promptConventionalCommitType() (conventionalCommitType, error) {
 	i, _, err := prompt.Run()
 
 	if err != nil {
-		return conventionalCommitType{}, err
+		if err == promptui.ErrInterrupt {
+			fmt.Println("Canceled.")
+			os.Exit(1)
+		}
+
+		log.Panic(err)
 	}
 
-	return conventialCommitTypeList[i], nil
+	return question.Choices[i].Value
 }

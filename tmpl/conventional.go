@@ -4,9 +4,39 @@ var conventionalCommandTemplateName = "conventional"
 var conventionalCommandTemplate = CommandTemplate{
 	Prompts: []Prompt{
 		{
-			PromptType: "conventional",
+			PromptType: "choice",
 			Mandatory:  true,
 			ValueCode:  "type",
+			Choices: []PromptChoice{
+				{
+					Value:       "feat",
+					Description: "A new feature.",
+				},
+				{
+					Value:       "fix",
+					Description: "A bug fix.",
+				},
+				{
+					Value:       "docs",
+					Description: "Documentation only changes.",
+				},
+				{
+					Value:       "perf",
+					Description: "A code change that improves performance.",
+				},
+				{
+					Value:       "refactor",
+					Description: "A code change that neither fixes a bug nor adds a feature.",
+				},
+				{
+					Value:       "test",
+					Description: "Adding missing or correcting existing tests.",
+				},
+				{
+					Value:       "chore",
+					Description: "Changes to the build process or auxiliary tools and libraries such as documentation generation.",
+				},
+			},
 		},
 		{
 			PromptType: "text",
