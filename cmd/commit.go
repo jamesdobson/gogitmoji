@@ -70,7 +70,6 @@ func commit() {
 	templates := viper.GetStringMap("templates")
 	t := viper.GetString(templateSetting)
 
-	// TODO: Update documentation with an example of setting a template
 	tmpl.LoadTemplates(templates)
 
 	if tpl, ok := tmpl.TemplateLookup[t]; ok {
@@ -87,18 +86,18 @@ func commitWithTemplate(tpl tmpl.CommandTemplate) {
 	for q := 0; q < len(tpl.Prompts); q++ {
 		var question = tpl.Prompts[q]
 
-		if question.EnableSetting != "" && !viper.GetBool(question.EnableSetting) {
+		if question.Condition != "" && !viper.GetBool(question.Condition) {
 			continue
 		}
 
-		switch question.PromptType {
+		switch question.Type {
 		case "text":
 			answer := promptOrCancel(question.Prompt, question.Mandatory)
-			answers[question.ValueCode] = answer
+			answers[question.Name] = answer
 
 		case "choice":
 			answer := promptChoice(question)
-			answers[question.ValueCode] = answer
+			answers[question.Name] = answer
 
 		case "gitmoji":
 			gitmoji, err := promptGitmoji()
@@ -112,10 +111,10 @@ func commitWithTemplate(tpl tmpl.CommandTemplate) {
 				log.Panic("Couldn't pick a gitmoji: ", err)
 			}
 
-			answers[question.ValueCode] = gitmoji
+			answers[question.Name] = gitmoji
 
 		default:
-			log.Fatalf("Unknown prompt type '%s'...\n", question.PromptType)
+			log.Fatalf("Unknown prompt type '%s'...\n", question.Type)
 		}
 	}
 

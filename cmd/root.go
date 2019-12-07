@@ -14,7 +14,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gogitmoji",
+	Use:   "gitmoji",
 	Short: "Gitmoji helper written in Go.",
 	Long:  `gogitmoji helps you write git commit messages containing gitmoji!`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -39,7 +39,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gogitmoji.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitmoji/config.yaml)")
 
 	setHelpEmoji()
 }

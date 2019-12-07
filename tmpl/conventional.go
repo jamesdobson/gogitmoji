@@ -4,10 +4,10 @@ var conventionalCommandTemplateName = "conventional"
 var conventionalCommandTemplate = CommandTemplate{
 	Prompts: []Prompt{
 		{
-			PromptType: "choice",
-			Prompt:     "Choose the type of commit:",
-			Mandatory:  true,
-			ValueCode:  "type",
+			Type:      "choice",
+			Prompt:    "Choose the type of commit:",
+			Mandatory: true,
+			Name:      "type",
 			Choices: []PromptChoice{
 				{
 					Value:       "feat",
@@ -40,23 +40,23 @@ var conventionalCommandTemplate = CommandTemplate{
 			},
 		},
 		{
-			PromptType: "text",
-			Mandatory:  true,
-			Prompt:     "Enter the commit description, with JIRA number at end",
-			ValueCode:  "description",
+			Type:      "text",
+			Mandatory: true,
+			Prompt:    "Enter the commit description, with JIRA number at end",
+			Name:      "description",
 		},
 		// TODO: Ask if this is a breaking change
 		{
-			PromptType: "text",
-			Mandatory:  false,
-			Prompt:     "Enter the (optional) commit body",
-			ValueCode:  "body",
+			Type:      "text",
+			Mandatory: false,
+			Prompt:    "Enter the (optional) commit body",
+			Name:      "body",
 		},
 		{
-			PromptType: "text",
-			Mandatory:  false,
-			Prompt:     "Enter the (optional) commit footer",
-			ValueCode:  "footer",
+			Type:      "text",
+			Mandatory: false,
+			Prompt:    "Enter the (optional) commit footer",
+			Name:      "footer",
 		},
 	},
 	Command: "git",

@@ -16,25 +16,28 @@ Currently under construction 🚧, not much is implemented!
 gitmoji help
 ```
 
-```
+```console
+Using config file: /Users/jamesdobson/.gitmoji/config.yaml
 gogitmoji helps you write git commit messages containing gitmoji!
 
 Usage:
-  gogitmoji [flags]
-  gogitmoji [command]
+  gitmoji [flags]
+  gitmoji [command]
 
 Available Commands:
   commit      ⚡️  Compose a commit message and execute git commit
+  export      🚢  Export a commit template
   help        📗  Help about any command
   info        🌍  Open gimoji information page in your browser
   list        📜  List all available gitmoji (default command)
   update      🔄  Update the list of gitmoji
+  version     ℹ️  Display the version of this program
 
 Flags:
-      --config string   config file (default is $HOME/.gogitmoji.yaml)
-  -h, --help            help for gogitmoji
+      --config string   config file (default is $HOME/.gitmoji/config.yaml)
+  -h, --help            help for gitmoji
 
-Use "gogitmoji [command] --help" for more information about a command.
+Use "gitmoji [command] --help" for more information about a command.
 ```
 
 ### Commit
@@ -42,13 +45,13 @@ Use "gogitmoji [command] --help" for more information about a command.
 Guides the user through the process of composing a commit message, and then
 executes `git commit`.
 
-```bash
+```console
 gitmoji commit
 ```
 
 `commit` is the default command, so just the following is equivalent:
 
-```bash
+```console
 gitmoji
 ```
 
@@ -56,11 +59,11 @@ gitmoji
 
 Prints the list of gitmoji.
 
-```bash
+```console
 gitmoji list
 ```
 
-```
+```console
 🎨  - :art: Improving structure / format of the code.
 ⚡️  - :zap: Improving performance.
 🔥  - :fire: Removing code or files.
@@ -133,7 +136,7 @@ gitmoji list
 Checks to see if there is a new list of gitmoji online, updating the local cache
 if there are new gitmoji.
 
-```bash
+```console
 gitmoji update
 ```
 
@@ -181,9 +184,64 @@ used. GitHub will render this as an emoji.
 
 ### Define New Commit Templates
 
-The configuration file allows the definition of new commit templates.
+The configuration file allows the definition of new commit templates. A commit
+template has three parts:
 
-TODO: Text here about how to define a template.
+- The command to run
+- Arguments to the command
+- User prompts of inputs for the arguments
+
+The following example demonstrates all three elements:
+
+```yaml
+templates:
+  example:
+    Command: echo
+    CommandArgs:
+    - Hello, {{ .name }}, I'm pleased to meet you.
+    Prompts:
+    - prompttype: text
+      mandatory: true
+      prompt: Enter your name
+      valuecode: name
+```
+
+This example prompts the user to enter their name, and then echoes it back
+to them as a polite greeting:
+
+```console
+jamesdobson@MacBook-Pro gitmoji % gitmoji commit -t example
+Using config file: /Users/jamesdobson/.gitmoji/config.yaml
+✔ Enter your name: James
+Going to execute: echo "Hello, James, I'm pleased to meet you."
+
+Execute: y
+Executing...
+Hello, James, I'm pleased to meet you.
+
+gogitmoji done.
+```
+
+In this example, the command is `echo`. In most cases, however, `Command` should
+be set to `git`.
+
+The arguments to the command are expressed as an array under the `CommandArgs`
+section. Each argument is a [Go template](https://golang.org/pkg/text/template/)
+that can refer to inputs that come from the user prompts. If an argument evaluates
+to the empty string, it is skipped.
+
+The final section, `Prompts`, is an array of user prompts. There are 3 kinds of
+user prompt, differentiated by their `Type` field:
+
+- `text`: Prompts the user with the text in `Prompt`, and waits for the user to
+  enter a text response.
+- `choice`: Prompts the user with a selection of options as given by the
+  `Choices` field.
+- `gitmoji`: Prompts the user with a list of gitmoji.
+
+The result of the prompt is stored under the name given by the `Name` field and
+is made available in the command arguments via the `{{ .xyz }}` syntax, where
+`xyz` is whatever was specified in the `Name` field.
 
 #### Default gitmoji commit template
 
@@ -201,30 +259,20 @@ templates:
     - '{{with .message}}-m{{end}}'
     - '{{.message}}'
     Prompts:
-    - prompttype: gitmoji
-      mandatory: true
-      prompt: ""
-      valuecode: gitmoji
-      enablesetting: ""
-      choices: []
-    - prompttype: text
-      mandatory: false
-      prompt: Enter the scope of current changes
-      valuecode: Scope
-      enablesetting: scope
-      choices: []
-    - prompttype: text
-      mandatory: true
-      prompt: Enter the commit title
-      valuecode: title
-      enablesetting: ""
-      choices: []
-    - prompttype: text
-      mandatory: false
-      prompt: Enter the (optional) commit message
-      valuecode: message
-      enablesetting: ""
-      choices: []
+    - Type: gitmoji
+      Mandatory: true
+      Name: gitmoji
+    - Type: text
+      Prompt: Enter the scope of current changes
+      Name: Scope
+      Condition: scope
+    - Type: text
+      Mandatory: true
+      Prompt: Enter the commit title
+      Name: title
+    - Type: text
+      Prompt: Enter the (optional) commit message
+      Name: message
 ```
 
 #### Default conventional commit template
@@ -244,45 +292,36 @@ templates:
     - '{{with .footer}}-m{{end}}'
     - '{{.footer}}'
     Prompts:
-    - prompttype: choice
-      mandatory: true
-      prompt: 'Choose the type of commit:'
-      valuecode: type
-      enablesetting: ""
-      choices:
-      - value: feat
-        description: A new feature.
-      - value: fix
-        description: A bug fix.
-      - value: docs
-        description: Documentation only changes.
-      - value: perf
-        description: A code change that improves performance.
-      - value: refactor
-        description: A code change that neither fixes a bug nor adds a feature.
-      - value: test
-        description: Adding missing or correcting existing tests.
-      - value: chore
-        description: Changes to the build process or auxiliary tools and libraries
+    - Type: choice
+      Mandatory: true
+      Prompt: 'Choose the type of commit:'
+      Name: type
+      Choices:
+      - Value: feat
+        Description: A new feature.
+      - Value: fix
+        Description: A bug fix.
+      - Value: docs
+        Description: Documentation only changes.
+      - Value: perf
+        Description: A code change that improves performance.
+      - Value: refactor
+        Description: A code change that neither fixes a bug nor adds a feature.
+      - Value: test
+        Description: Adding missing or correcting existing tests.
+      - Value: chore
+        Description: Changes to the build process or auxiliary tools and libraries
           such as documentation generation.
-    - prompttype: text
-      mandatory: true
-      prompt: Enter the commit description, with JIRA number at end
-      valuecode: description
-      enablesetting: ""
-      choices: []
-    - prompttype: text
-      mandatory: false
-      prompt: Enter the (optional) commit body
-      valuecode: body
-      enablesetting: ""
-      choices: []
-    - prompttype: text
-      mandatory: false
-      prompt: Enter the (optional) commit footer
-      valuecode: footer
-      enablesetting: ""
-      choices: []
+    - Type: text
+      Mandatory: true
+      Prompt: Enter the commit description, with JIRA number at end
+      Name: description
+    - Type: text
+      Prompt: Enter the (optional) commit body
+      Name: body
+    - Type: text
+      Prompt: Enter the (optional) commit footer
+      Name: footer
 ```
 
 ## License
