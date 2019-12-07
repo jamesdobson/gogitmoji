@@ -39,3 +39,15 @@ release:
   github:
     owner: jamesdobson
     name: gogitmoji
+brew:
+  name: gogitmoji
+  github:
+    owner: jamesdobson
+    name: homebrew-gogitmoji
+  url_template: "https://github.com/jamesdobson/gogitmoji/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  commit_author:
+    name: gogitmoji
+    email: gogitmoji@softwarepunk.com
+  folder: Formula
+  homepage: "https://github.com/jamesdobson/gogitmoji"
+  description: "gogitmoji helps you write git commit messages containing gitmoji!"
