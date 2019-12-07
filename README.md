@@ -229,7 +229,7 @@ templates:
 
 #### Default conventional commit template
 
-This is the default `gitmoji` commit template:
+This is the default `conventional` commit template:
 
 ```yaml
 templates:
@@ -246,7 +246,7 @@ templates:
     Prompts:
     - prompttype: choice
       mandatory: true
-      prompt: ""
+      prompt: 'Choose the type of commit:'
       valuecode: type
       enablesetting: ""
       choices:

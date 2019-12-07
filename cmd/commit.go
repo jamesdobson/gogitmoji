@@ -23,7 +23,7 @@ const (
 
 	scopeSetting = "scope"
 
-	typeSetting = "type"
+	templateSetting = "template"
 )
 
 // commitCmd represents the commit command
@@ -48,8 +48,7 @@ func init() {
 
 	commitCmd.Flags().StringP("format", "f", formatAsEmoji, `Emoji format; either "emoji" or "code".`)
 	commitCmd.Flags().BoolP("scope", "p", false, "Enable scope prompt")
-	// TODO: Change to "template"
-	commitCmd.Flags().StringP("type", "t", tmpl.DefaultTemplateName, `Commit template name.`)
+	commitCmd.Flags().StringP("template", "t", tmpl.DefaultTemplateName, `Commit template name.`)
 
 	err = viper.BindPFlag(formatSetting, commitCmd.Flags().Lookup("format"))
 	if err != nil {
@@ -61,7 +60,7 @@ func init() {
 		panic(err)
 	}
 
-	err = viper.BindPFlag(typeSetting, commitCmd.Flags().Lookup("type"))
+	err = viper.BindPFlag(templateSetting, commitCmd.Flags().Lookup("template"))
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +68,7 @@ func init() {
 
 func commit() {
 	templates := viper.GetStringMap("templates")
-	t := viper.GetString(typeSetting)
+	t := viper.GetString(templateSetting)
 
 	// TODO: Update documentation with an example of setting a template
 	tmpl.LoadTemplates(templates)
@@ -78,7 +77,7 @@ func commit() {
 		commitWithTemplate(tpl)
 		fmt.Printf("\ngogitmoji done.\n")
 	} else {
-		log.Fatalf("Unknown commit type: \"%s\"\n", t)
+		log.Fatalf("Unknown commit template: \"%s\"\n", t)
 	}
 }
 
@@ -332,7 +331,7 @@ func promptChoice(question tmpl.Prompt) string {
 	}
 
 	prompt := promptui.Select{
-		Label:     "Choose the type of commit:",
+		Label:     question.Prompt,
 		Items:     question.Choices,
 		Templates: templates,
 		Size:      12,

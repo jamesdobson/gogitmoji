@@ -5,6 +5,7 @@ var conventionalCommandTemplate = CommandTemplate{
 	Prompts: []Prompt{
 		{
 			PromptType: "choice",
+			Prompt:     "Choose the type of commit:",
 			Mandatory:  true,
 			ValueCode:  "type",
 			Choices: []PromptChoice{
