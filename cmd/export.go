@@ -15,7 +15,7 @@ import (
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
 	Use:   "export",
-	Short: "Export a commit template",
+	Short: "🚢  Export a commit template",
 	Long:  `Export a commit template.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {

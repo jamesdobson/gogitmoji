@@ -137,22 +137,153 @@ if there are new gitmoji.
 gitmoji update
 ```
 
-## Capabilities
+## Configuration
 
-- [x] Select a gitmoji from a list
-- [x] Search name, description, and code
-- [x] Automatically get latest gitmoji database
-- [x] Implement first automated tests
-- [x] Ask gitmoji commit message questions and output commit message
-- [x] Commit to git with commit message
-- [x] List gitmoji
-- [x] Update gitmoji cache
-- [x] Support emoji code in message instead of emoji itself (add configuration support)
-- [x] Ask for scope depending on config
-- [x] CI build and releases
-- [ ] Homebrew package
-- [ ] Install git commit hook
-- [x] Support conventional commits (with optional gitmoji)
+The configuration file is stored at `~/.gitmoji/config.yaml`. The config file
+can specify the following:
+
+- Default commit template
+- Enable "scope" prompt
+- Emoji format
+- New commit templates
+
+### Set the Default Commit Template
+
+Specify the name of the default commit template:
+
+```yaml
+template: "conventional"
+```
+
+### Enable the "scope" Prompt
+
+Enable / disable prompting for commit scope:
+
+```yaml
+scope: True
+```
+
+Note: this is used by the default `gitmoji` template, but has no effect on the
+default `conventional` template. This can be changed by defining a custom
+template and using the `enablesetting` field on the corresponding `Prompt`.
+
+### Set the Emoji Format
+
+The emoji format can be set to either `emoji` (its default value) or `code`:
+
+```yaml
+format: code
+```
+
+When set to `emoji`, the UTF-8 bytes encoding the emoji will be used in the
+commit message. When set to `code`, an text string (e.g. `:sparkles:`) will be
+used. GitHub will render this as an emoji.
+
+### Define New Commit Templates
+
+The configuration file allows the definition of new commit templates.
+
+TODO: Text here about how to define a template.
+
+#### Default gitmoji commit template
+
+This is the default `gitmoji` commit template:
+
+```yaml
+templates:
+  gitmoji:
+    Command: git
+    CommandArgs:
+    - commit
+    - -m
+    - '{{if eq (getString "format") "emoji"}}{{.gitmoji.Emoji}} {{else}}{{.gitmoji.Code}}{{end}}
+      {{with .scope}}({{.}}): {{end}}{{.title}}'
+    - '{{with .message}}-m{{end}}'
+    - '{{.message}}'
+    Prompts:
+    - prompttype: gitmoji
+      mandatory: true
+      prompt: ""
+      valuecode: gitmoji
+      enablesetting: ""
+      choices: []
+    - prompttype: text
+      mandatory: false
+      prompt: Enter the scope of current changes
+      valuecode: Scope
+      enablesetting: scope
+      choices: []
+    - prompttype: text
+      mandatory: true
+      prompt: Enter the commit title
+      valuecode: title
+      enablesetting: ""
+      choices: []
+    - prompttype: text
+      mandatory: false
+      prompt: Enter the (optional) commit message
+      valuecode: message
+      enablesetting: ""
+      choices: []
+```
+
+#### Default conventional commit template
+
+This is the default `gitmoji` commit template:
+
+```yaml
+templates:
+  conventional:
+    Command: git
+    CommandArgs:
+    - commit
+    - -m
+    - '{{.type}}: {{.description}}'
+    - '{{with .body}}-m{{end}}'
+    - '{{.body}}'
+    - '{{with .footer}}-m{{end}}'
+    - '{{.footer}}'
+    Prompts:
+    - prompttype: choice
+      mandatory: true
+      prompt: ""
+      valuecode: type
+      enablesetting: ""
+      choices:
+      - value: feat
+        description: A new feature.
+      - value: fix
+        description: A bug fix.
+      - value: docs
+        description: Documentation only changes.
+      - value: perf
+        description: A code change that improves performance.
+      - value: refactor
+        description: A code change that neither fixes a bug nor adds a feature.
+      - value: test
+        description: Adding missing or correcting existing tests.
+      - value: chore
+        description: Changes to the build process or auxiliary tools and libraries
+          such as documentation generation.
+    - prompttype: text
+      mandatory: true
+      prompt: Enter the commit description, with JIRA number at end
+      valuecode: description
+      enablesetting: ""
+      choices: []
+    - prompttype: text
+      mandatory: false
+      prompt: Enter the (optional) commit body
+      valuecode: body
+      enablesetting: ""
+      choices: []
+    - prompttype: text
+      mandatory: false
+      prompt: Enter the (optional) commit footer
+      valuecode: footer
+      enablesetting: ""
+      choices: []
+```
 
 ## License
 
