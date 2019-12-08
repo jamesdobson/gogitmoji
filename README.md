@@ -2,13 +2,21 @@
 
 [Gitmoji](https://gitmoji.carloscuesta.me/) helper written with ❤️ in Go. Inspired by [gitmoji-cli](https://github.com/carloscuesta/gitmoji-cli).
 
-Currently under construction 🚧, not much is implemented!
-
 [![Build Status](https://travis-ci.org/jamesdobson/gogitmoji.svg?branch=master)](https://travis-ci.org/jamesdobson/gogitmoji)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jamesdobson/gogitmoji)](https://goreportcard.com/report/github.com/jamesdobson/gogitmoji)
 [![Coverage Status](https://coveralls.io/repos/github/jamesdobson/gogitmoji/badge.svg?branch=master)](https://coveralls.io/github/jamesdobson/gogitmoji?branch=master)
 
 [![asciicast](https://asciinema.org/a/283799.svg)](https://asciinema.org/a/283799)
+
+## Installation
+
+### Mac OS X
+
+Install using Homebrew:
+
+```bash
+brew install jamesdobson/gogitmoji/gogitmoji
+```
 
 ## Usage
 

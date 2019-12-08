@@ -6,8 +6,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// TODO: Clean up structure names and member names (do while writing explanation for them in README)
-
 // CommandTemplate represents a command to execute and user prompts to get
 // the command arguments.
 type CommandTemplate struct {
