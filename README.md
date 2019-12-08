@@ -64,6 +64,23 @@ gitmoji commit
 gitmoji
 ```
 
+### Git Hook
+
+You can configure git to run gogitmoji automatically when you execute `git commit`,
+so that you don't always have to remember to type `gitmoji`. To do so, just
+set up a git hook in your git repositories:
+
+```bash
+#!/bin/sh
+
+exec < /dev/tty
+gitmoji hook do $1
+exit $?
+```
+
+Place the above in the file `<my repo>/.git/hooks/prepare-commit-msg` and ensure
+the file is executable (e.g. `chmod a+x prepare-commit-msg`)
+
 ### List
 
 Prints the list of gitmoji.
