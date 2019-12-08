@@ -241,11 +241,9 @@ to the empty string, it is skipped.
 The final section, `Prompts`, is an array of user prompts. There are 3 kinds of
 user prompt, differentiated by their `Type` field:
 
-- `text`: Prompts the user with the text in `Prompt`, and waits for the user to
-  enter a text response.
-- `choice`: Prompts the user with a selection of options as given by the
-  `Choices` field.
-- `gitmoji`: Prompts the user with a list of gitmoji.
+  - `text`: Prompts the user with the text in `Prompt`, and waits for the user to enter a text response.
+  - `choice`: Prompts the user with a selection of options as given by the `Choices` field.
+  - `gitmoji`: Prompts the user with a list of gitmoji.
 
 The result of the prompt is stored under the name given by the `Name` field and
 is made available in the command arguments via the `{{ .xyz }}` syntax, where

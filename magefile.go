@@ -12,7 +12,7 @@ import (
  * Targets
  */
 
-// Lints the code.
+// Lint checks the code for common errors.
 func Lint() error {
 	_, err := sh.Exec(
 		nil, os.Stdout, os.Stderr,
