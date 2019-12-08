@@ -1,4 +1,4 @@
-package cmd
+package tmpl
 
 import (
 	"testing"

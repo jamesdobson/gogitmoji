@@ -1,5 +1,9 @@
 pre-commit:
-    parallel: true
-    commands:
-      lint:
-        run: mage lint
+  parallel: true
+  commands:
+    lint:
+      run: mage lint
+prepare-commit-msg:
+  commands:
+    gitmoji:
+      run: echo

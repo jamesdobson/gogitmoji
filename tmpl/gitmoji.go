@@ -36,6 +36,10 @@ var gitmojiCommandTemplate = CommandTemplate{
 		"{{with .message}}-m{{end}}",
 		"{{.message}}",
 	},
+	Messages: []string{
+		`{{if eq (getString "format") "emoji"}}{{.gitmoji.Emoji}} {{else}}{{.gitmoji.Code}}{{end}} {{with .scope}}({{.}}): {{end}}{{.title}}`,
+		"{{.message}}",
+	},
 }
 
 func init() {

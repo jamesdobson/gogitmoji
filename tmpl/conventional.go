@@ -69,6 +69,11 @@ var conventionalCommandTemplate = CommandTemplate{
 		"{{with .footer}}-m{{end}}",
 		"{{.footer}}",
 	},
+	Messages: []string{
+		"{{.type}}: {{.description}}",
+		"{{.body}}",
+		"{{.footer}}",
+	},
 }
 
 func init() {
