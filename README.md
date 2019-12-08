@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/jamesdobson/gogitmoji.svg?branch=master)](https://travis-ci.org/jamesdobson/gogitmoji)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jamesdobson/gogitmoji)](https://goreportcard.com/report/github.com/jamesdobson/gogitmoji)
 [![Coverage Status](https://coveralls.io/repos/github/jamesdobson/gogitmoji/badge.svg?branch=master)](https://coveralls.io/github/jamesdobson/gogitmoji?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/386deea133c0488a88a04b3bb1c44244)](https://www.codacy.com/manual/jamesdobson/gogitmoji?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jamesdobson/gogitmoji&amp;utm_campaign=Badge_Grade)
 
 [![asciicast](https://asciinema.org/a/283799.svg)](https://asciinema.org/a/283799)
 
