@@ -3,7 +3,7 @@ pre-commit:
   commands:
     lint:
       run: mage lint
-prepare-commit-msg:
-  commands:
-    gitmoji:
-      run: echo
+# prepare-commit-msg:
+#   commands:
+#     gitmoji:
+#       run: go run main.go hook do
