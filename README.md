@@ -267,6 +267,11 @@ The result of the prompt is stored under the name given by the `Name` field and
 is made available in the command arguments via the `{{ .xyz }}` syntax, where
 `xyz` is whatever was specified in the `Name` field.
 
+There is an additional section, `Messages`, that is used when gogitmoji is called
+as a commit hook. In this case, no command is executed (because commit is already
+running) however the `Messages` are evaluated and written to the file that git
+provides to the commit hook as an argument.
+
 #### Default gitmoji commit template
 
 This is the default `gitmoji` commit template:
@@ -281,6 +286,10 @@ templates:
     - '{{if eq (getString "format") "emoji"}}{{.gitmoji.Emoji}} {{else}}{{.gitmoji.Code}}{{end}}
       {{with .scope}}({{.}}): {{end}}{{.title}}'
     - '{{with .message}}-m{{end}}'
+    - '{{.message}}'
+    Messages:
+    - '{{if eq (getString "format") "emoji"}}{{.gitmoji.Emoji}} {{else}}{{.gitmoji.Code}}{{end}}
+      {{with .scope}}({{.}}): {{end}}{{.title}}'
     - '{{.message}}'
     Prompts:
     - Type: gitmoji
@@ -314,6 +323,10 @@ templates:
     - '{{with .body}}-m{{end}}'
     - '{{.body}}'
     - '{{with .footer}}-m{{end}}'
+    - '{{.footer}}'
+    Messages:
+    - '{{.type}}: {{.description}}'
+    - '{{.body}}'
     - '{{.footer}}'
     Prompts:
     - Type: choice
