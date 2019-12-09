@@ -83,6 +83,11 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	} else {
-		log.Fatalf("Error reading '%s': %v", viper.ConfigFileUsed(), err)
+		switch err.(type) {
+		case viper.ConfigFileNotFoundError:
+			// missing config file is ok
+		default:
+			log.Fatalf("Error reading '%s': %v", viper.ConfigFileUsed(), err)
+		}
 	}
 }
