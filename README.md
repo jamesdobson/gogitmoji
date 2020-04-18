@@ -8,7 +8,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/386deea133c0488a88a04b3bb1c44244)](https://www.codacy.com/manual/jamesdobson/gogitmoji?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jamesdobson/gogitmoji&amp;utm_campaign=Badge_Grade)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji?ref=badge_shield)
 
-[![asciicast](https://asciinema.org/a/283799.svg)](https://asciinema.org/a/283799)
+[![asciicast](https://asciinema.org/a/321491.svg)](https://asciinema.org/a/321491)
 
 ## Installation
 
