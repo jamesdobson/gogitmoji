@@ -13,3 +13,5 @@ require (
 	github.com/stretchr/testify v1.5.1
 	gopkg.in/yaml.v2 v2.2.8
 )
+
+replace github.com/manifoldco/promptui => github.com/jamesdobson/promptui v0.7.1

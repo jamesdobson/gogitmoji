@@ -241,7 +241,7 @@ func prompt(question string, mandatory bool) (string, error) {
 		Templates: templates,
 
 		// Disable the pointer
-		Pointer: func(x []rune) []rune { return x },
+		//Pointer: func(x []rune) []rune { return x },
 	}
 
 	result, err := prompt.Run()
