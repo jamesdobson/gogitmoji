@@ -6,6 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/jamesdobson/gogitmoji)](https://goreportcard.com/report/github.com/jamesdobson/gogitmoji)
 [![Coverage Status](https://coveralls.io/repos/github/jamesdobson/gogitmoji/badge.svg?branch=master)](https://coveralls.io/github/jamesdobson/gogitmoji?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/386deea133c0488a88a04b3bb1c44244)](https://www.codacy.com/manual/jamesdobson/gogitmoji?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jamesdobson/gogitmoji&amp;utm_campaign=Badge_Grade)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji?ref=badge_shield)
 
 [![asciicast](https://asciinema.org/a/283799.svg)](https://asciinema.org/a/283799)
 
@@ -368,3 +369,6 @@ templates:
 Licensed under the [MIT](https://github.com/jamesdobson/gogitmoji/blob/master/LICENSE) license.
 
 The gitmoji database is from [Gitmoji](https://gitmoji.carloscuesta.me/).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji?ref=badge_large)
