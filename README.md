@@ -26,7 +26,6 @@ gitmoji help
 ```
 
 ```console
-Using config file: /Users/jamesdobson/.gitmoji/config.yaml
 gogitmoji helps you write git commit messages containing gitmoji!
 
 Usage:
@@ -34,11 +33,12 @@ Usage:
   gitmoji [command]
 
 Available Commands:
-  commit      ⚡️  Compose a commit message and execute git commit
+  commit      ⚡️  Compose a commit message and execute git commit (default command)
   export      🚢  Export a commit template
   help        📗  Help about any command
-  info        🌍  Open gimoji information page in your browser
-  list        📜  List all available gitmoji (default command)
+  hook        🎣  Manage commit hooks
+  info        🌍  Open gimoji information page in gyour browser
+  list        📜  List all available gitmoji
   update      🔄  Update the list of gitmoji
   version     ℹ️  Display the version of this program
 
@@ -154,7 +154,9 @@ gitmoji list
 🏷️  - :label: Adding or updating types (Flow, TypeScript)
 🌱  - :seedling: Adding or updating seed files
 🚩  - :triangular_flag_on_post: Adding, updating, or removing feature flags
+🥅  - :goal_net: Catching errors
 💫  - :dizzy: Adding or updating animations and transitions
+🗑  - :wastebasket: Deprecating code that needs to be cleaned up.
 ```
 
 ### Update
