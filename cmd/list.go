@@ -13,7 +13,7 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "📜  List all available gitmoji (default command)",
+	Short: "📜  List all available gitmoji",
 	Long: `List all available gitmoji.
 
 The gitmoji are printed on standard output, one gitmoji per line. Each line
