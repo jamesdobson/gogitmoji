@@ -370,5 +370,4 @@ Licensed under the [MIT](https://github.com/jamesdobson/gogitmoji/blob/master/LI
 
 The gitmoji database is from [Gitmoji](https://gitmoji.carloscuesta.me/).
 
-
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjamesdobson%2Fgogitmoji?ref=badge_large)
