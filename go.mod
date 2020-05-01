@@ -6,7 +6,7 @@ require (
 	github.com/fatih/color v1.9.0
 	github.com/magefile/mage v1.9.0
 	github.com/manifoldco/promptui v0.7.0
-	github.com/mitchellh/mapstructure v1.2.2
+	github.com/mitchellh/mapstructure v1.3.0
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.6.3
