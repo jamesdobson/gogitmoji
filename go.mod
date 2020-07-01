@@ -9,7 +9,7 @@ require (
 	github.com/mitchellh/mapstructure v1.3.2
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/spf13/cobra v1.0.0
-	github.com/spf13/viper v1.6.3
+	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.5.1
 	gopkg.in/yaml.v2 v2.3.0
 )
