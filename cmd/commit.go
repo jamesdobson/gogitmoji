@@ -40,9 +40,9 @@ be a space between "hook" and "do."`,
 		if cmd.CalledAs() == "hook" {
 			if len(args) == 2 && args[0] == "do" {
 				do(args[1:])
+			} else {
+				log.Fatalf("Argument to hook must be 'do', followed by path to commit message file.")
 			}
-
-			log.Fatalf("Argument to hook must be 'do', followed by path to commit message file.")
 		} else {
 			commit()
 		}
