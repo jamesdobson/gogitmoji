@@ -37,7 +37,6 @@ Available Commands:
   commit      ⚡️  Compose a commit message and execute git commit (default command)
   export      🚢  Export a commit template
   help        📗  Help about any command
-  hook        🎣  Manage commit hooks
   info        🌍  Open gimoji information page in gyour browser
   list        📜  List all available gitmoji
   update      🔄  Update the list of gitmoji
