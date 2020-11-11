@@ -182,7 +182,7 @@ func (cache *Cache) GetGitmoji() ([]Gitmoji, error) {
 	err = json.Unmarshal(content, &container)
 
 	if err != nil {
-		return nil, fmt.Errorf("Cannot process gitmoji list; perhaps the file is corrupted? Underlying error: %v", err)
+		return nil, fmt.Errorf("Cannot process gitmoji list; perhaps the file %v is corrupted? Underlying error: %v", cache.CacheFile, err)
 	}
 
 	cache.gitmoji = container.Gitmoji
