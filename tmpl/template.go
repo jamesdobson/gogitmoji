@@ -263,7 +263,7 @@ func promptGitmoji() (gitmoji.Gitmoji, error) {
 	glist, err := cache.GetGitmoji()
 
 	if err != nil {
-		log.Panic("Unable to get list of gitmoji: ", err)
+		log.Fatal("Unable to get list of gitmoji: ", err)
 	}
 
 	templates := &promptui.SelectTemplates{
