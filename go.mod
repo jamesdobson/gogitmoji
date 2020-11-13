@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/fatih/color v1.9.0
-	github.com/magefile/mage v1.9.0
+	github.com/magefile/mage v1.10.0
 	github.com/manifoldco/promptui v0.7.0
 	github.com/mitchellh/mapstructure v1.3.3
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
