@@ -11,7 +11,7 @@ import (
 )
 
 // GitmojiURL is the address from which to download the list of gitmoji.
-const GitmojiURL string = "https://raw.githubusercontent.com/carloscuesta/gitmoji/master/src/data/gitmojis.json"
+const GitmojiURL string = "https://raw.githubusercontent.com/carloscuesta/gitmoji/master/packages/gitmojis/src/gitmojis.json"
 
 // GitmojiDirName is the name of the directory under the user's home directory to store the gitmoji list.
 const GitmojiDirName string = ".gitmoji"
