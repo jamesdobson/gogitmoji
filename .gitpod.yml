@@ -4,7 +4,8 @@
 
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 
-image: gitpod/workspace-go
+image:
+    file: .gitpod.Dockerfile
 
 tasks:
   - command: go install github.com/magefile/mage@latest
