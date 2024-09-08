@@ -8,7 +8,9 @@ image:
     file: .gitpod.Dockerfile
 
 tasks:
-  - command: go install github.com/magefile/mage@latest
+  - init: go install github.com/magefile/mage@latest
+    command: mage lint
+
   - init: go get && go build ./... && go test ./...
     command: go run . help
 
