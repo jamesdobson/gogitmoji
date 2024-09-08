@@ -15,7 +15,7 @@ var updateCmd = &cobra.Command{
 	Long: `Update the list of gitmoji.
 
 Downloads a new list of gitmoji from https://gitmoji.carloscuesta.me/.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(*cobra.Command, []string) {
 		err := gitmoji.UpdateCache()
 
 		if err != nil {

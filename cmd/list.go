@@ -19,7 +19,7 @@ var listCmd = &cobra.Command{
 The gitmoji are printed on standard output, one gitmoji per line. Each line
 has the emoji itself, the emoji's code, and a description of when to use
 it.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(*cobra.Command, []string) {
 		list()
 	},
 }

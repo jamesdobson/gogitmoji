@@ -17,7 +17,7 @@ var exportCmd = &cobra.Command{
 	Use:   "export",
 	Short: "🚢  Export a commit template",
 	Long:  `Export a commit template.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		if len(args) != 1 {
 			log.Fatalf("The export command expects a single argument: the name of the commit template to export.\n")
 		}

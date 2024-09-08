@@ -2,7 +2,6 @@ package gitmoji
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -13,7 +12,7 @@ import (
 )
 
 func TestInvalidJSON(t *testing.T) {
-	f, err := ioutil.TempFile("", "gitmoji")
+	f, err := os.CreateTemp("", "gitmoji")
 	defer os.Remove(f.Name())
 
 	if err != nil {
@@ -36,7 +35,7 @@ func TestInvalidJSON(t *testing.T) {
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
-		download: func(url string) ([]byte, error) {
+		download: func(string) ([]byte, error) {
 			return []byte("This is also not valid JSON"), nil
 		},
 	}
@@ -63,7 +62,7 @@ func TestInvalidJSON(t *testing.T) {
 }
 
 func TestEmptyJSON(t *testing.T) {
-	f, err := ioutil.TempFile("", "gitmoji")
+	f, err := os.CreateTemp("", "gitmoji")
 	defer os.Remove(f.Name())
 
 	if err != nil {
@@ -86,7 +85,7 @@ func TestEmptyJSON(t *testing.T) {
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
-		download: func(url string) ([]byte, error) {
+		download: func(string) ([]byte, error) {
 			t.Fatal("This should not be called")
 			return nil, nil
 		},
@@ -109,7 +108,7 @@ func TestUnreadableCacheFile(t *testing.T) {
 		t.Skip("Skipping test on Windows due to os.Chmod incompatibility.")
 	}
 
-	f, err := ioutil.TempFile("", "gitmoji")
+	f, err := os.CreateTemp("", "gitmoji")
 	defer os.Remove(f.Name())
 
 	if err != nil {
@@ -132,7 +131,7 @@ func TestUnreadableCacheFile(t *testing.T) {
 		CacheFile: f.Name(),
 		gitmoji:   nil,
 
-		download: func(url string) ([]byte, error) {
+		download: func(string) ([]byte, error) {
 			t.Fatal("This should not be called")
 			return nil, nil
 		},
@@ -158,7 +157,7 @@ func TestErrorFetchingData(t *testing.T) {
 		CacheFile: cacheFile,
 		gitmoji:   nil,
 
-		download: func(url string) ([]byte, error) {
+		download: func(string) ([]byte, error) {
 			return nil, fmt.Errorf("trigger an error")
 		},
 	}
@@ -175,7 +174,7 @@ func TestLoadFromURL(t *testing.T) {
 	cacheFile := path.Join(os.TempDir(), "gitmoji-temp-file.json")
 
 	// Testing HTTP Server
-	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, _ *http.Request) {
 		_, err := rw.Write([]byte(`{
 			"gitmojis": [
 			  {
@@ -231,7 +230,7 @@ func TestLoad404(t *testing.T) {
 	}
 
 	// Testing HTTP Server
-	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, _ *http.Request) {
 		rw.WriteHeader(http.StatusNotFound)
 	}))
 	defer server.Close()

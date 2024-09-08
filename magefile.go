@@ -1,3 +1,4 @@
+//go:build mage
 // +build mage
 
 package main
@@ -27,12 +28,9 @@ func Lint() error {
 		"--enable=gocyclo",
 		"--enable=gofmt",
 		"--enable=goimports",
-		"--enable=golint",
 		"--enable=gosec",
-		"--enable=interfacer",
-		"--enable=maligned",
 		"--enable=prealloc",
-		"--enable=scopelint",
+		"--enable=revive",
 		"--enable=unparam",
 		"--enable=unconvert",
 		"--enable=whitespace",

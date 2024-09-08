@@ -14,7 +14,7 @@ var infoCmd = &cobra.Command{
 	Use:   "info",
 	Short: "🌍  Open gimoji information page in your browser",
 	Long:  `Open gimoji information page in your browser.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(*cobra.Command, []string) {
 		err := browser.OpenURL(infoURL)
 
 		if err != nil {

@@ -162,7 +162,7 @@ func generateArgs(templates *[]string, answers map[string]interface{}) []string 
 }
 
 func getPrintableCommand(name string, args []string) string {
-	var sb *strings.Builder = &strings.Builder{}
+	var sb = &strings.Builder{}
 
 	sb.WriteString(name)
 
@@ -284,8 +284,8 @@ func promptGitmoji() (gitmoji.Gitmoji, error) {
 		tosearch := gitmoji.Name + gitmoji.Code + gitmoji.Description
 
 		// Normalize
-		tosearch = strings.Replace(strings.ToLower(tosearch), " ", "", -1)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+		tosearch = strings.ReplaceAll(strings.ToLower(tosearch), " ", "")
+		input = strings.ReplaceAll(strings.ToLower(input), " ", "")
 
 		return strings.Contains(tosearch, input)
 	}
@@ -309,8 +309,8 @@ func promptGitmoji() (gitmoji.Gitmoji, error) {
 
 func promptChoice(question Prompt) string {
 	templates := &promptui.SelectTemplates{
-		Label: "{{ \"?\" | yellow }} {{ . }}",
-		Active: "‣ {{ .Value }} 	{{ .Description }}",
+		Label:    "{{ \"?\" | yellow }} {{ . }}",
+		Active:   "‣ {{ .Value }} 	{{ .Description }}",
 		Inactive: "  {{ .Value }} 	{{ .Description }}",
 		Selected: `{{ "? ` + question.Prompt + `" | faint }} {{ .Value }}  - {{ .Description }}`,
 	}
@@ -320,8 +320,8 @@ func promptChoice(question Prompt) string {
 		tosearch := t.Value + t.Description
 
 		// Normalize
-		tosearch = strings.Replace(strings.ToLower(tosearch), " ", "", -1)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+		tosearch = strings.ReplaceAll(strings.ToLower(tosearch), " ", "")
+		input = strings.ReplaceAll(strings.ToLower(input), " ", "")
 
 		return strings.Contains(tosearch, input)
 	}
