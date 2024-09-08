@@ -4,8 +4,13 @@
 
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 
+image: gitpod/workspace-go
+
 tasks:
+  - command: go install github.com/magefile/mage@latest
   - init: go get && go build ./... && go test ./...
-    command: go run .
+    command: go run . help
 
-
+vscode:
+  extensions:
+    - golang.go
