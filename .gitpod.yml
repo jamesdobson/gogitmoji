@@ -8,10 +8,7 @@ image:
     file: .gitpod.Dockerfile
 
 tasks:
-  - init: go install github.com/magefile/mage@latest
-    command: mage lint
-
-  - init: go get && go build ./... && go test ./...
+  - init: go get && go build ./... && go test ./... && mage -v lint
     command: go run . help
 
 vscode:
