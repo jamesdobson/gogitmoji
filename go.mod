@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.5
 
 require (
-	github.com/fatih/color v1.17.0
+	github.com/fatih/color v1.18.0
 	github.com/magefile/mage v1.15.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/mapstructure v1.5.0
