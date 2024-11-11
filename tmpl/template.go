@@ -26,12 +26,13 @@ type CommandTemplate struct {
 
 // Prompt defines a question to ask the user.
 type Prompt struct {
-	Type      string         `yaml:"Type"`
-	Mandatory bool           `yaml:"Mandatory,omitempty"`
-	Prompt    string         `yaml:"Prompt,omitempty"`
-	Name      string         `yaml:"Name"`
-	Condition string         `yaml:"Condition,omitempty"`
-	Choices   []PromptChoice `yaml:"Choices,omitempty"`
+	Type      string          `yaml:"Type"`
+	Mandatory bool            `yaml:"Mandatory,omitempty"`
+	Prompt    string          `yaml:"Prompt,omitempty"`
+	Name      string          `yaml:"Name"`
+	Condition string          `yaml:"Condition,omitempty"`
+	Choices   []PromptChoice  `yaml:"Choices,omitempty"`
+	Config    map[string]bool `yaml:"Config,omitempty"`
 }
 
 // PromptChoice defines a single option in a multiple-choice prompt.
@@ -107,7 +108,11 @@ func getAnswers(tpl CommandTemplate) map[string]interface{} {
 			answers[question.Name] = answer
 
 		case "gitmoji":
-			gitmoji, err := promptGitmoji()
+			search, ok := question.Config["StartInSearchMode"]
+			if !ok {
+				search = false
+			}
+			gitmoji, err := promptGitmoji(search)
 
 			if err != nil {
 				if err == promptui.ErrInterrupt {
@@ -253,7 +258,7 @@ func prompt(question string, mandatory bool) (string, error) {
 	return result, nil
 }
 
-func promptGitmoji() (gitmoji.Gitmoji, error) {
+func promptGitmoji(startInSearchMode bool) (gitmoji.Gitmoji, error) {
 	cache, err := gitmoji.NewCache()
 
 	if err != nil {
@@ -291,11 +296,12 @@ func promptGitmoji() (gitmoji.Gitmoji, error) {
 	}
 
 	prompt := promptui.Select{
-		Label:     "Choose a gitmoji",
-		Items:     glist,
-		Templates: templates,
-		Size:      12,
-		Searcher:  searcher,
+		Label:             "Choose a gitmoji",
+		Items:             glist,
+		Templates:         templates,
+		Size:              12,
+		Searcher:          searcher,
+		StartInSearchMode: startInSearchMode,
 	}
 
 	i, _, err := prompt.Run()
